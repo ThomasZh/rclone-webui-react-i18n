@@ -26,22 +26,22 @@ export default {
       url: "/remoteExplorer",
       icon: "icon-screen-desktop",
     },
-    {
-      name: intl.formatMessage({
-        id: "nav.Backend",
-        defaultMessage: "Backend",
-      }),
-      url: "/rcloneBackend",
-      icon: "icon-star",
-    },
-    {
-      name: intl.formatMessage({
-        id: "nav.Mounts",
-        defaultMessage: "Mounts",
-      }),
-      url: "/mountDashboard",
-      icon: "fa fa-hdd-o",
-    },
+    // {
+    //   name: intl.formatMessage({
+    //     id: "nav.Backend",
+    //     defaultMessage: "Backend",
+    //   }),
+    //   url: "/rcloneBackend",
+    //   icon: "icon-star",
+    // },
+    // {
+    //   name: intl.formatMessage({
+    //     id: "nav.Mounts",
+    //     defaultMessage: "Mounts",
+    //   }),
+    //   url: "/mountDashboard",
+    //   icon: "fa fa-hdd-o",
+    // },
     {
       name: intl.formatMessage({
         id: "nav.LogOut",

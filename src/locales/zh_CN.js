@@ -22,6 +22,7 @@ const zh_CN = {
   "routes.MountDashboard": "挂载仪表盘",
   "Home.Jobs": "任务",
   "Home.NotMonitoring": "没有监控",
+  "Base.RunningJobs.GlobalStats": "全局状态",
 };
 
 export default zh_CN;
