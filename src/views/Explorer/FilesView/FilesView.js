@@ -1,10 +1,10 @@
 import React from "react";
 import axiosInstance from "../../../utils/API/API";
-import {Alert, Col, Container, Row, Spinner, Table} from "reactstrap";
-import {DropTarget} from "react-dnd";
+import { Alert, Col, Container, Row, Spinner, Table } from "reactstrap";
+import { DropTarget } from "react-dnd";
 import FileComponent from "./FileComponent";
-import {ItemTypes} from "./Constants";
-import {toast} from "react-toastify";
+import { ItemTypes } from "./Constants";
+import { toast } from "react-toastify";
 import {
     addColonAtLast,
     changeListVisibility,
@@ -12,19 +12,20 @@ import {
     getSortCompareFunction,
     isEmpty
 } from "../../../utils/Tools";
-import {connect} from "react-redux";
-import {getFiles} from "../../../actions/explorerActions";
-import {compose} from "redux";
-import {changePath, changeSortFilter, navigateUp} from "../../../actions/explorerStateActions";
+import { connect } from "react-redux";
+import { getFiles } from "../../../actions/explorerActions";
+import { compose } from "redux";
+import { changePath, changeSortFilter, navigateUp } from "../../../actions/explorerStateActions";
 import LinkShareModal from "../../Base/LinkShareModal/LinkShareModal";
 import ScrollableDiv from "../../Base/ScrollableDiv/ScrollableDiv";
-import {FILES_VIEW_HEIGHT} from "../../../utils/Constants";
-import {PROP_CURRENT_PATH, PROP_FS_INFO} from "../../../utils/RclonePropTypes";
+import { FILES_VIEW_HEIGHT } from "../../../utils/Constants";
+import { PROP_CURRENT_PATH, PROP_FS_INFO } from "../../../utils/RclonePropTypes";
 import * as PropTypes from 'prop-types';
 import ErrorBoundary from "../../../ErrorHandling/ErrorBoundary";
-import {createNewPublicLink, deleteFile, purgeDir} from "rclone-api";
-import {createSelector} from "reselect";
+import { createNewPublicLink, deleteFile, purgeDir } from "rclone-api";
+import { createSelector } from "reselect";
 import DropOverlay from "../../Base/DropOverlay/DropOverlay";
+import { intl } from "../../../utils/intl";
 
 /*
 * Start code for react DND
@@ -35,7 +36,7 @@ const filesTarget = {
         if (monitor.didDrop()) return;
         // console.log("drop", props, monitor, monitor.getItem(), component);
 
-        let {Name, Path, IsDir, remoteName} = monitor.getItem();
+        let { Name, Path, IsDir, remoteName } = monitor.getItem();
 
         let srcRemoteName = addColonAtLast(remoteName);
         let srcRemotePath = Path;
@@ -56,7 +57,7 @@ const filesTarget = {
 
     },
     canDrop(props, monitor) {
-        const {remoteName, remotePath} = monitor.getItem();
+        const { remoteName, remotePath } = monitor.getItem();
         const destRemoteName = props.currentPath.remoteName;
         const destRemotePath = props.currentPath.remotePath;
         if (destRemoteName === remoteName) {
@@ -134,7 +135,7 @@ class FilesView extends React.PureComponent {
 
 
     handleFileClick(e, item) {
-        const {Path, IsDir, IsBucket} = item;
+        const { Path, IsDir, IsBucket } = item;
         if (IsDir || IsBucket) {
             this.updateRemotePath(Path, IsDir, IsBucket);
         } else {
@@ -144,7 +145,7 @@ class FilesView extends React.PureComponent {
     }
 
     updateRemotePath(newRemotePath, IsDir, IsBucket) {
-        const {remoteName} = this.props.currentPath;
+        const { remoteName } = this.props.currentPath;
 
         let updateRemoteName = "";
         let updateRemotePath = "";
@@ -165,7 +166,7 @@ class FilesView extends React.PureComponent {
 
 
     getFilesList() {
-        const {remoteName, remotePath} = this.props.currentPath;
+        const { remoteName, remotePath } = this.props.currentPath;
 
         this.props.getFiles(remoteName, remotePath);
 
@@ -173,8 +174,8 @@ class FilesView extends React.PureComponent {
 
     async downloadHandle(item) {
         // let {remoteName, remotePath} = this.props;
-        let {remoteName, remotePath} = this.props.currentPath;
-        const {fsInfo} = this.props;
+        let { remoteName, remotePath } = this.props.currentPath;
+        const { fsInfo } = this.props;
         let downloadUrl = "";
         if (fsInfo.Features.BucketBased) {
             downloadUrl = `/[${remoteName}]/${remotePath}/${item.Name}`;
@@ -209,13 +210,13 @@ class FilesView extends React.PureComponent {
             };
         }, () => {
             if (this.state.downloadingItems === 0) {
-                this.setState({isDownloadProgress: false})
+                this.setState({ isDownloadProgress: false })
             }
         });
     }
 
     async deleteHandle(item) {
-        let {remoteName} = this.props.currentPath;
+        let { remoteName } = this.props.currentPath;
 
         try {
             if (item.IsDir) {
@@ -249,14 +250,14 @@ class FilesView extends React.PureComponent {
     };
 
     dismissAlert = (_) => {
-        this.setState({isDownloadProgress: false});
+        this.setState({ isDownloadProgress: false });
     };
 
     linkShareHandle = (item) => {
-        const {fsInfo} = this.props;
+        const { fsInfo } = this.props;
         if (fsInfo.Features.PublicLink) {
             // console.log("Sharing link" + item.Name);
-            const {remoteName} = this.props.currentPath;
+            const { remoteName } = this.props.currentPath;
             createNewPublicLink(remoteName, item.Path)
                 .then((res) => {
                     // console.log("Public Link: " + res.data.url);
@@ -275,12 +276,12 @@ class FilesView extends React.PureComponent {
     };
 
     getFileComponents = (isDir) => {
-        const {files, containerID, gridMode, fsInfo, loadImages} = this.props;
-        const {remoteName, remotePath} = this.props.currentPath;
+        const { files, containerID, gridMode, fsInfo, loadImages } = this.props;
+        const { remoteName, remotePath } = this.props.currentPath;
         // console.log(fsInfo, files);
         if (fsInfo && !isEmpty(fsInfo)) {
             return files.reduce((result, item) => {
-                let {ID, Name} = item;
+                let { ID, Name } = item;
                 // Using fallback as fileName when the ID is not available (especially for local file system)
                 if (ID === undefined) {
                     ID = Name;
@@ -288,13 +289,13 @@ class FilesView extends React.PureComponent {
                 if (item.IsDir === isDir) {
                     result.push(
                         <FileComponent key={ID} item={item} clickHandler={this.handleFileClick}
-                                       downloadHandle={this.downloadHandle} deleteHandle={this.deleteHandle}
-                                       remoteName={remoteName} remotePath={remotePath} gridMode={gridMode}
-                                       containerID={containerID}
-                                       linkShareHandle={this.linkShareHandle}
-                                       loadImages={loadImages}
-                                       isBucketBased={fsInfo.Features.BucketBased}
-                                       canCopy={fsInfo.Features.Copy} canMove={fsInfo.Features.Move} itemIdx={1}>
+                            downloadHandle={this.downloadHandle} deleteHandle={this.deleteHandle}
+                            remoteName={remoteName} remotePath={remotePath} gridMode={gridMode}
+                            containerID={containerID}
+                            linkShareHandle={this.linkShareHandle}
+                            loadImages={loadImages}
+                            isBucketBased={fsInfo.Features.BucketBased}
+                            canCopy={fsInfo.Features.Copy} canMove={fsInfo.Features.Move} itemIdx={1}>
 
                         </FileComponent>
                     );
@@ -305,7 +306,7 @@ class FilesView extends React.PureComponent {
     };
 
     applySortFilter = (sortFilter) => {
-        const {changeSortFilter, containerID} = this.props;
+        const { changeSortFilter, containerID } = this.props;
 
         if (this.props.sortFilter === sortFilter) {
             return changeSortFilter(containerID, sortFilter, (this.props.sortFilterAscending !== true));
@@ -317,17 +318,27 @@ class FilesView extends React.PureComponent {
 
 
     render() {
-        const {isLoading, isDownloadProgress, downloadingItems, generatedLink, showLinkShareModal} = this.state;
-        const {connectDropTarget, isOver, files, gridMode, canDrop, sortFilter, sortFilterAscending} = this.props;
-        const {remoteName} = this.props.currentPath;
+        const { isLoading, isDownloadProgress, downloadingItems, generatedLink, showLinkShareModal } = this.state;
+        const { connectDropTarget, isOver, files, gridMode, canDrop, sortFilter, sortFilterAscending } = this.props;
+        const { remoteName } = this.props.currentPath;
 
         if (isLoading || !files) {
-            return (<div><Spinner color="primary"/> Loading</div>);
+            return (<div><Spinner color="primary" />
+                {intl.formatMessage({
+                    id: "Explorer.FilesView.Fileview.Loading",
+                    defaultMessage: "Loading",
+                })}
+            </div>);
         } else {
 
 
             if (remoteName === "") {
-                return (<div>No remote is selected. Select a remote from above to show files.</div>);
+                return (<div>
+                    {intl.formatMessage({
+                        id: "Explorer.FilesView.Fileview.Noremoteisselected",
+                        defaultMessage: "No remote is selected. Select a remote from above to show files.",
+                    })}
+                </div>);
             }
 
 
@@ -345,13 +356,23 @@ class FilesView extends React.PureComponent {
 
                         <Row>
                             <Col lg={3}>
-                                <h3>Directories</h3>
+                                <h3>
+                                    {intl.formatMessage({
+                                        id: "Explorer.FilesView.Fileview.Directories",
+                                        defaultMessage: "Directories",
+                                    })}
+                                </h3>
                                 <ScrollableDiv height={FILES_VIEW_HEIGHT}>
                                     {dirComponentMap}
                                 </ScrollableDiv>
                             </Col>
                             <Col lg={9}>
-                                <h3>Files</h3>
+                                <h3>
+                                    {intl.formatMessage({
+                                        id: "Explorer.FilesView.Fileview.Files",
+                                        defaultMessage: "Files",
+                                    })}
+                                </h3>
                                 <ScrollableDiv height={FILES_VIEW_HEIGHT}>
                                     <Row>
                                         {fileComponentMap}
@@ -367,7 +388,7 @@ class FilesView extends React.PureComponent {
                 )
             } else {
                 let filterIconClass = "fa fa-lg fa-arrow-down";
-                if(sortFilterAscending){
+                if (sortFilterAscending) {
                     filterIconClass = "fa fa-lg fa-arrow-up";
                 }
                 renderElement = (
@@ -378,36 +399,71 @@ class FilesView extends React.PureComponent {
 
                             <Table className="table table-responsive-sm table-striped table-fix-head">
                                 <thead>
-                                <tr>
-                                    <th className="pointer-cursor"
-                                        onClick={() => this.applySortFilter("name")}>Name {sortFilter === "name" &&
-                                    <i className={filterIconClass}/>}</th>
-                                    <th className="pointer-cursor"
-                                        onClick={() => this.applySortFilter("size")}>Size {sortFilter === "size" &&
-                                    <i className={filterIconClass}/>}</th>
-                                    <th className="d-none d-md-table-cell pointer-cursor"
-                                        onClick={() => this.applySortFilter("modified")}>Modified {sortFilter === "modified" &&
-                                    <i className={filterIconClass}/>}</th>
-                                    <th>Actions</th>
-                                </tr>
+                                    <tr>
+                                        <th className="pointer-cursor"
+                                            onClick={() => this.applySortFilter("name")}>
+                                            {intl.formatMessage({
+                                                id: "Explorer.FilesView.Fileview.Name",
+                                                defaultMessage: "Name",
+                                            })}
+                                            {sortFilter === "name" &&
+                                                <i className={filterIconClass} />}</th>
+                                        <th className="pointer-cursor"
+                                            onClick={() => this.applySortFilter("size")}>
+                                            {intl.formatMessage({
+                                                id: "Explorer.FilesView.Fileview.Size",
+                                                defaultMessage: "Size",
+                                            })}
+                                            {sortFilter === "size" &&
+                                                <i className={filterIconClass} />}</th>
+                                        <th className="d-none d-md-table-cell pointer-cursor"
+                                            onClick={() => this.applySortFilter("modified")}>
+                                            {intl.formatMessage({
+                                                id: "Explorer.FilesView.Fileview.Modified",
+                                                defaultMessage: "Modified",
+                                            })}
+                                            {sortFilter === "modified" &&
+                                                <i className={filterIconClass} />}</th>
+                                        <th>
+                                            {intl.formatMessage({
+                                                id: "Explorer.FilesView.Fileview.Actions",
+                                                defaultMessage: "Actions",
+                                            })}
+                                        </th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                {files.length > 0 ? (
+                                    {files.length > 0 ? (
                                         <React.Fragment>
                                             <tr>
-                                                <th colSpan={4}>Directories</th>
+                                                <th colSpan={4}>
+                                                    {intl.formatMessage({
+                                                        id: "Explorer.FilesView.Fileview.Directories",
+                                                        defaultMessage: "Directories",
+                                                    })}
+                                                </th>
                                             </tr>
                                             {dirComponentMap}
                                             <tr>
-                                                <th colSpan={4}>Files</th>
+                                                <th colSpan={4}>
+                                                    {intl.formatMessage({
+                                                        id: "Explorer.FilesView.Fileview.Files",
+                                                        defaultMessage: "Files",
+                                                    })}
+                                                </th>
                                             </tr>
                                             {fileComponentMap}
                                         </React.Fragment>
                                     ) :
-                                    <tr>
-                                        <th colSpan={4}>Files</th>
-                                    </tr>
-                                }
+                                        <tr>
+                                            <th colSpan={4}>
+                                                {intl.formatMessage({
+                                                    id: "Explorer.FilesView.Fileview.Files",
+                                                    defaultMessage: "Files",
+                                                })}
+                                            </th>
+                                        </tr>
+                                    }
                                 </tbody>
                             </Table>
                         </ScrollableDiv>
@@ -420,18 +476,26 @@ class FilesView extends React.PureComponent {
 
             return connectDropTarget(
                 <div className={"row"}>
-                    {isOver && canDrop && <DropOverlay/>}
+                    {isOver && canDrop && <DropOverlay />}
                     <ErrorBoundary>
 
                         <Alert color="info" isOpen={isDownloadProgress} toggle={this.dismissAlert} sm={12}
-                               lg={12}>
-                            Downloading {downloadingItems} file(s). Please wait.
+                            lg={12}>
+                            {intl.formatMessage({
+                                id: "Explorer.FilesView.Fileview.Downloading",
+                                defaultMessage: "Downloading",
+                            })}
+                            {downloadingItems}
+                            {intl.formatMessage({
+                                id: "Explorer.FilesView.Fileview.filePleaseWait",
+                                defaultMessage: "file(s). Please wait.",
+                            })}
                         </Alert>
 
                         {renderElement}
 
                         <LinkShareModal closeModal={this.closeLinkShareModal} isVisible={showLinkShareModal}
-                                        linkUrl={generatedLink}/>
+                            linkUrl={generatedLink} />
                     </ErrorBoundary>
                 </div>
             );
@@ -482,8 +546,8 @@ const getVisibleFiles = createSelector(
 )
 
 const mapStateToProps = (state, ownProps) => {
-    const {currentPaths, gridMode, searchQueries, loadImages, sortFilters, sortFiltersAscending} = state.explorer;
-    const {containerID} = ownProps;
+    const { currentPaths, gridMode, searchQueries, loadImages, sortFilters, sortFiltersAscending } = state.explorer;
+    const { containerID } = ownProps;
     const currentPath = currentPaths[containerID];
     const mgridMode = gridMode[containerID];
     const searchQuery = searchQueries[containerID];
@@ -492,7 +556,7 @@ const mapStateToProps = (state, ownProps) => {
     const sortFilterAscending = sortFiltersAscending[containerID];
 
     let fsInfo = {};
-    const {remoteName, remotePath} = currentPath;
+    const { remoteName, remotePath } = currentPath;
 
     if (currentPath && state.remote.configs) {
         const tempRemoteName = remoteName.split(':')[0];
@@ -523,7 +587,7 @@ const mapStateToProps = (state, ownProps) => {
 
 export default compose(
     connect(
-        mapStateToProps, {getFiles, navigateUp, changePath, changeSortFilter}
+        mapStateToProps, { getFiles, navigateUp, changePath, changeSortFilter }
     ),
     DropTarget(ItemTypes.FILECOMPONENT, filesTarget, collect)
 )(FilesView)

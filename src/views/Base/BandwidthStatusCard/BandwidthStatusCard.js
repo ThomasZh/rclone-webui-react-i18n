@@ -1,12 +1,12 @@
 import React from "react";
-import {validateSizeSuffix} from "../../../utils/Tools";
-import {toast} from "react-toastify";
-import {Button, Card, CardBody, CardHeader, Col, Form, FormFeedback, FormGroup, Input, Label} from "reactstrap";
-import {connect} from "react-redux";
-import {getBandwidth, setBandwidth} from "../../../actions/statusActions";
+import { validateSizeSuffix } from "../../../utils/Tools";
+import { toast } from "react-toastify";
+import { Button, Card, CardBody, CardHeader, Col, Form, FormFeedback, FormGroup, Input, Label } from "reactstrap";
+import { connect } from "react-redux";
+import { getBandwidth, setBandwidth } from "../../../actions/statusActions";
 import * as PropTypes from "prop-types";
-import {PROP_BANDWIDTH} from "../../../utils/RclonePropTypes";
-
+import { PROP_BANDWIDTH } from "../../../utils/RclonePropTypes";
+import { intl } from "../../../utils/intl";
 
 class BandwidthStatusCard extends React.Component {
 
@@ -23,7 +23,7 @@ class BandwidthStatusCard extends React.Component {
      * Get the current bandwidth from the backend
      */
     getBandwidth = () => {
-        const {getBandwidth} = this.props;
+        const { getBandwidth } = this.props;
         getBandwidth();
     };
 
@@ -33,9 +33,9 @@ class BandwidthStatusCard extends React.Component {
      */
     setBandwidth = (e) => {
         e.preventDefault();
-        const {bandwidthText, hasError} = this.state;
+        const { bandwidthText, hasError } = this.state;
         if (!hasError) {
-            const {setBandwidth} = this.props;
+            const { setBandwidth } = this.props;
             if (bandwidthText) {
                 setBandwidth(bandwidthText);
                 this.toggleShowChangeBandwidth();
@@ -44,7 +44,9 @@ class BandwidthStatusCard extends React.Component {
                 setBandwidth("0M");
             }
         } else {
-            toast.error("Please check the errors before submitting");
+            toast.error(
+                "Please check the errors before submitting"
+                );
         }
     };
 
@@ -60,9 +62,9 @@ class BandwidthStatusCard extends React.Component {
             validateInput = true;
         } else if (inputValue) {
             const splitValue = inputValue.split(":");
-            if(splitValue.length === 1) {
+            if (splitValue.length === 1) {
                 validateInput = validateSizeSuffix(splitValue[0]);
-            }else if(splitValue.length === 2) {
+            } else if (splitValue.length === 2) {
                 const validateDownloadLimit = validateSizeSuffix(splitValue[0]);
                 const validateUploadLimit = validateSizeSuffix(splitValue[1]);
                 validateInput = validateDownloadLimit && validateUploadLimit;
@@ -92,39 +94,70 @@ class BandwidthStatusCard extends React.Component {
     };
 
     render() {
-        const {bandwidthText, hasError, showChangeBandwidth} = this.state;
-        const {bandwidth} = this.props;
+        const { bandwidthText, hasError, showChangeBandwidth } = this.state;
+        const { bandwidth } = this.props;
 
 
-        return ( 
-        <Card>
-            <CardHeader>
-                Bandwidth <button className="btn btn-white float-right" onClick={this.toggleShowChangeBandwidth}>Modify</button>
-            </CardHeader>
-            <CardBody>
-                <p>
-                    <span className="card-subtitle">Current Max speed: {"  "}</span> 
-                    <span className="card-text">{(bandwidth.rate !== "off") ? bandwidth.rate : "Unlimited"}</span>
-                </p>
-                <Form onSubmit={this.setBandwidth} className={showChangeBandwidth ? "" : "d-none"}>
-                    <FormGroup row>
-                        <Label for="bandwidthValue" sm={5}>Enter new max speed (upload:download)</Label>
-                        <Col sm={7}>
-                            <Input type="text" value={bandwidthText}
+        return (
+            <Card>
+                <CardHeader>
+                    {intl.formatMessage({
+                        id: "Base.BandwidthStatusCard.Bandwidth",
+                        defaultMessage: "Bandwidth:",
+                    })}<button className="btn btn-white float-right" onClick={this.toggleShowChangeBandwidth}>{intl.formatMessage({
+                        id: "Base.BandwidthStatusCard.Modify",
+                        defaultMessage: "Modify:",
+                    })}</button>
+                </CardHeader>
+                <CardBody>
+                    <p>
+                        <span className="card-subtitle"> {intl.formatMessage({
+                            id: "Base.BandwidthStatusCard.CurrentMaxSpeed",
+                            defaultMessage: "Current Max speed:",
+                        })} {"  "}</span>
+                        <span className="card-text">{(bandwidth.rate !== "off") ? bandwidth.rate : intl.formatMessage({
+                            id: "Base.BandwidthStatusCard.Unlimited",
+                            defaultMessage: "Unlimited",
+                        })}</span>
+                    </p>
+                    <Form onSubmit={this.setBandwidth} className={showChangeBandwidth ? "" : "d-none"}>
+                        <FormGroup row>
+                            <Label for="bandwidthValue" sm={5}>
+                                {intl.formatMessage({
+                                    id: "Base.BandwidthStatusCard.newMaxSpeed",
+                                    defaultMessage: "Enter new max speed (upload:download)",
+                                })}
+                            </Label>
+                            <Col sm={7}>
+                                <Input type="text" value={bandwidthText}
                                     valid={!hasError} invalid={hasError}
                                     id="bandwidthValue" onChange={this.changeBandwidthInput}>
-                            </Input>
-                            <FormFeedback valid>Keep empty to reset.</FormFeedback>
-                            <FormFeedback>The bandwidth should be of the form 1M|2M|1G|1K|1.1K etc. Can also be specified as (upload:download)</FormFeedback>
+                                </Input>
+                                <FormFeedback valid>
+                                    {intl.formatMessage({
+                                        id: "Base.BandwidthStatusCard.keepEmptyToReset",
+                                        defaultMessage: "Keep empty to reset.",
+                                    })}
+                                </FormFeedback>
+                                <FormFeedback>
+                                    {intl.formatMessage({
+                                        id: "Base.BandwidthStatusCard.bandwidthTheForm",
+                                        defaultMessage: "The bandwidth should be of the form 1M|2M|1G|1K|1.1K etc. Can also be specified as (upload:download)",
+                                    })}
+                                </FormFeedback>
+                            </Col>
+                        </FormGroup>
+                        <Button className="float-right" color="success" type="submit">
+                            {intl.formatMessage({
+                                id: "Base.BandwidthStatusCard.Set",
+                                defaultMessage: "Set",
+                            })}
+                        </Button>
 
-                        </Col>
-                    </FormGroup>
-                    <Button className="float-right" color="success" type="submit">Set</Button>
+                    </Form>
 
-                </Form>
-                
-            </CardBody>
-        </Card>)
+                </CardBody>
+            </Card>)
     }
 }
 
@@ -156,4 +189,4 @@ BandwidthStatusCard.propTypes = {
 
 };
 
-export default connect(mapStateToProps, {getBandwidth, setBandwidth})(BandwidthStatusCard)
+export default connect(mapStateToProps, { getBandwidth, setBandwidth })(BandwidthStatusCard)

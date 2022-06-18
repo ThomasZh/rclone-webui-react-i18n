@@ -1,11 +1,12 @@
 import React from 'react';
 import RemoteListAutoSuggest from "./RemoteListAutoSuggest";
-import {connect} from "react-redux";
-import {getFsInfo, getRemoteNames} from "../../../actions/explorerActions";
+import { connect } from "react-redux";
+import { getFsInfo, getRemoteNames } from "../../../actions/explorerActions";
 import PropTypes from 'prop-types'
-import {changeRemoteName} from "../../../actions/explorerStateActions";
-import {Button, Col, Form} from "reactstrap";
-import {PROP_CURRENT_PATH} from "../../../utils/RclonePropTypes";
+import { changeRemoteName } from "../../../actions/explorerStateActions";
+import { Button, Col, Form } from "reactstrap";
+import { PROP_CURRENT_PATH } from "../../../utils/RclonePropTypes";
+import { intl } from "../../../utils/intl";
 
 class RemotesList extends React.Component {
 
@@ -15,7 +16,10 @@ class RemotesList extends React.Component {
             isEmpty: false,
             remoteName: props.remoteName,
             openEnabled: false,
-            openButtonText: "Open"
+            openButtonText: intl.formatMessage({
+                id: "Explorer.RemoteList.RemotesList.Open1",
+                defaultMessage: "Open",
+            }),
         };
     }
 
@@ -24,24 +28,30 @@ class RemotesList extends React.Component {
         this.props.getRemoteNames();
     }
 
-    shouldUpdateRemoteName = (event, {newValue}) => {
+    shouldUpdateRemoteName = (event, { newValue }) => {
         if (newValue.indexOf('/') === 0) {
             this.setState({
                 remoteName: newValue,
-                openButtonText: "Open local path",
+                openButtonText: intl.formatMessage({
+                    id: "Explorer.RemoteList.RemotesList.OpenLocalPath",
+                    defaultMessage: "Open local path",
+                }),
             });
         } else {
             this.setState({
                 remoteName: newValue,
-                openButtonText: "Open"
+                openButtonText: intl.formatMessage({
+                    id: "Explorer.RemotesList.RemotesList.Open",
+                    defaultMessage: "Open.",
+                })
             });
         }
     };
 
     openRemote = (e) => {
         e.preventDefault();
-        const {handleChangeRemoteName} = this.props;
-        const {remoteName} = this.state;
+        const { handleChangeRemoteName } = this.props;
+        const { remoteName } = this.state;
 
         handleChangeRemoteName(remoteName);
 
@@ -49,36 +59,43 @@ class RemotesList extends React.Component {
 
 
     render() {
-        const {isEmpty, remoteName} = this.state;
-        const {remotes} = this.props;
-        const {hasError} = this.props;
+        const { isEmpty, remoteName } = this.state;
+        const { remotes } = this.props;
+        const { hasError } = this.props;
         // const {updateRemoteNameHandle} = this.props;
 
         if (hasError) {
             return (
                 <div>
-                    Error loading remotes. Please try again.
+                    {intl.formatMessage({
+                        id: "Explorer.RemotesList.RemotesList.Errorloading",
+                        defaultMessage: "Error loading remotes. Please try again.",
+                    })}
                 </div>
             )
         } else if (isEmpty) {
             return (
                 <div>
-                    Add some remotes to see them here <span role="img" aria-label="sheep">🐑</span>.
+                    {intl.formatMessage({
+                        id: "Explorer.RemotesList.RemotesList.Addremotes",
+                        defaultMessage: "Add some remotes to see them here",
+                    })}
+                    <span role="img" aria-label="sheep">🐑</span>.
                 </div>);
         } else {
 
             return (
                 <Form onSubmit={this.openRemote} className="row">
-                    
+
                     <Col xs={12} sm={10} lg={10}>
                         <RemoteListAutoSuggest value={remoteName} onChange={this.shouldUpdateRemoteName}
-                                                suggestions={remotes}/>
+                            suggestions={remotes} />
                     </Col>
                     <Col xs={12} sm={2} lg={2}>
 
                         <Button className={"btn-lg"} color="success">{this.state.openButtonText}</Button>
                     </Col>
-                    
+
                 </Form>
 
             );

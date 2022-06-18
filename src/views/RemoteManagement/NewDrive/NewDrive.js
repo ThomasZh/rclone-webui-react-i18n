@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Card, CardBody, Col, Collapse, Container, FormFeedback, FormGroup, Input, Label, Row} from "reactstrap";
+import { Button, Card, CardBody, Col, Collapse, Container, FormFeedback, FormGroup, Input, Label, Row } from "reactstrap";
 // import {config} from "./config.js";
 import NewDriveAuthModal from "../../Base/NewDriveAuthModal";
 import axiosInstance from "../../../utils/API/API";
@@ -12,13 +12,14 @@ import {
     validateSizeSuffix
 } from "../../../utils/Tools";
 import ProviderAutoSuggest from "./ProviderAutoSuggest";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 import * as PropTypes from 'prop-types';
-import {getProviders} from "../../../actions/configActions";
-import {connect} from "react-redux";
-import {NEW_DRIVE_CONFIG_REFRESH_TIMEOUT} from "../../../utils/Constants";
+import { getProviders } from "../../../actions/configActions";
+import { connect } from "react-redux";
+import { NEW_DRIVE_CONFIG_REFRESH_TIMEOUT } from "../../../utils/Constants";
 import ErrorBoundary from "../../../ErrorHandling/ErrorBoundary";
 import urls from "../../../utils/API/endpoint";
+import { intl } from "../../../utils/intl";
 
 /**
  * Returns a component with set of input, error for the drivePrefix.
@@ -33,7 +34,7 @@ import urls from "../../../utils/API/endpoint";
  * @returns             {Array|*}   JSX array with parameter formGroups.
  * @constructor
  */
-function DriveParameters({drivePrefix, loadAdvanced, changeHandler, currentValues, isValidMap, errorsMap, config}) {
+function DriveParameters({ drivePrefix, loadAdvanced, changeHandler, currentValues, isValidMap, errorsMap, config }) {
     if (drivePrefix !== undefined && drivePrefix !== "") {
         const currentProvider = findFromConfig(config, drivePrefix);
         let outputMap = [];
@@ -102,8 +103,8 @@ function DriveParameters({drivePrefix, loadAdvanced, changeHandler, currentValue
                             <Label for={attr.Name} sm={5}>{labelValue}{requiredValue}</Label>
                             <Col sm={7}>
                                 <Input type={inputType} value={currentValues[attr.Name]}
-                                       name={attr.Name} valid={isValidMap[attr.Name]} invalid={!isValidMap[attr.Name]}
-                                       id={attr.Name} onChange={changeHandler} required={attr.Required}>
+                                    name={attr.Name} valid={isValidMap[attr.Name]} invalid={!isValidMap[attr.Name]}
+                                    id={attr.Name} onChange={changeHandler} required={attr.Required}>
                                     {examplesMap}
                                 </Input>
                                 <FormFeedback>{errorsMap[attr.Name]}</FormFeedback>
@@ -119,7 +120,12 @@ function DriveParameters({drivePrefix, loadAdvanced, changeHandler, currentValue
         return outputMap;
     }
     return (
-        <div>Select a drive type to continue</div>
+        <div>
+            {intl.formatMessage({
+                id: "RemoteManagement.Newdrive.Newdrive.Selectadrivetypetocontinue",
+                defaultMessage: "Select a drive type to continue",
+            })}
+        </div>
     );
 }
 
@@ -146,15 +152,26 @@ function DriveParameters({drivePrefix, loadAdvanced, changeHandler, currentValue
  * @returns             {*}         Functional component.
  * @constructor
  */
-function CustomInput({key, id, label, changeHandler, type, value, name, placeholder, isValid = false}) {
+function CustomInput({ key, id, label, changeHandler, type, value, name, placeholder, isValid = false }) {
     return (
         <FormGroup key={key} row>
             <Label for={id} sm={5}>{label}</Label>
             <Col sm={7}>
                 <Input type={type} value={value} name={name} placeholder={placeholder}
-                       id={id} onChange={changeHandler} valid={isValid} invalid={!isValid} required/>
-                <FormFeedback valid>Sweet! that name is available</FormFeedback>
-                <FormFeedback>Sad! That name is already assigned or empty</FormFeedback>
+                    id={id} onChange={changeHandler} valid={isValid} invalid={!isValid} required />
+                <FormFeedback valid>
+                    {intl.formatMessage({
+                        id: "RemoteManagement.Newdrive.Newdrive.thatNameisAvailable",
+                        defaultMessage: "Sweet! that name is available",
+                    })}
+                </FormFeedback>
+                <FormFeedback>
+                    {intl.formatMessage({
+                        id: "RemoteManagement.Newdrive.Newdrive.assignedOrEmptye",
+                        defaultMessage: "Sad! That name is already assigned or empty",
+                    })}
+
+                </FormFeedback>
             </Col>
         </FormGroup>);
 }
@@ -182,7 +199,7 @@ class NewDrive extends React.Component {
 
             drivePrefix: "",
             driveNameIsValid: false,
-            formErrors: {driveName: ""},
+            formErrors: { driveName: "" },
             optionTypes: {},
             isValid: {},
 
@@ -204,15 +221,15 @@ class NewDrive extends React.Component {
     toggle = (e) => {
         let name = e.target.name;
 
-        this.setState({[name]: !this.state[name]})
+        this.setState({ [name]: !this.state[name] })
     };
 
     // Returns true or false based on whether the config is created
     async checkConfigStatus() {
-        const {driveName} = this.state;
+        const { driveName } = this.state;
 
         try {
-            let res = await axiosInstance.post(urls.getConfigForRemote, {name: driveName});
+            let res = await axiosInstance.post(urls.getConfigForRemote, { name: driveName });
             // console.log(res);
 
             if (!isEmpty(res.data)) {
@@ -251,24 +268,37 @@ class NewDrive extends React.Component {
         if (inputType === "SizeSuffix") {
             validateResult = validateSizeSuffix(inputValue);
             if (!validateResult) {
-                error = "The valid input is size( off | {unit}{metric} eg: 10G, 100M, 10G100M etc.)"
+                //error = "The valid input is size( off | {unit}{metric} eg: 10G, 100M, 10G100M etc.)"
+                error = intl.formatMessage({
+                    id: "RemoteManagement.Newdrive.Newdrive.validInputSize",
+                    defaultMessage: "The valid input is size( off | {unit}{metric} eg: 10G, 100M, 10G100M etc.)",
+                })
             }
         } else if (inputType === "Duration") {
             validateResult = validateDuration(inputValue);
             if (!validateResult) {
-                error = "The valid input is time ({unit}{metric} eg: 10ms, 100m, 10h15ms etc.)"
+                error = intl.formatMessage({
+                    id: "RemoteManagement.Newdrive.Newdrive.validInputTime",
+                    defaultMessage: "The valid input is time ({unit}{metric} eg: 10ms, 100m, 10h15ms etc.)",
+                })
             }
         } else if (inputType === "int") {
             validateResult = validateInt(inputValue);
             if (!validateResult) {
-                error = "The valid input is int (100,200,300 etc)"
+                error = intl.formatMessage({
+                    id: "RemoteManagement.Newdrive.Newdrive.validInputInt",
+                    defaultMessage: "The valid input is int (100,200,300 etc)",
+                })
             }
         }
 
         if (this.state.required[inputName] && (!inputValue || inputValue === "")) {
             validateResult = false;
             if (!validateResult) {
-                error += " This field is required";
+                error += error = intl.formatMessage({
+                    id: "RemoteManagement.Newdrive.Newdrive.fieldIsRequired",
+                    defaultMessage: "This field is required",
+                });
             }
         }
 
@@ -294,9 +324,9 @@ class NewDrive extends React.Component {
      * @param event     {$ObjMap} Event to be handled.
      * @param newValue  {string} new Value of the drive type.
      */
-    changeDriveType = (event, {newValue}) => {
+    changeDriveType = (event, { newValue }) => {
 
-        const {providers} = this.props;
+        const { providers } = this.props;
 
         let val = newValue;
 
@@ -315,7 +345,7 @@ class NewDrive extends React.Component {
 
                 currentConfig.Options.forEach(item => {
 
-                    const {DefaultStr, Type, Name, Required, Hide} = item;
+                    const { DefaultStr, Type, Name, Required, Hide } = item;
                     if (Hide === 0) {
                         availableOptions[Name] = DefaultStr;
                         optionTypes[Name] = Type;
@@ -336,7 +366,7 @@ class NewDrive extends React.Component {
                 required: required
             });
         } else {
-            this.setState({drivePrefix: val})
+            this.setState({ drivePrefix: val })
 
         }
     };
@@ -346,7 +376,7 @@ class NewDrive extends React.Component {
      */
     openSetupDrive = (e) => {
         if (e) e.preventDefault();
-        this.setState({'colSetup': true});
+        this.setState({ 'colSetup': true });
         // this.setupDriveDiv.scrollIntoView({behavior: "smooth"});
     };
 
@@ -354,7 +384,7 @@ class NewDrive extends React.Component {
      *  toggle the step 3: advanced options
      */
     editAdvancedOptions = (e) => {
-        this.setState({advancedOptions: !this.state.advancedOptions});
+        this.setState({ advancedOptions: !this.state.advancedOptions });
     };
 
     /**
@@ -363,7 +393,7 @@ class NewDrive extends React.Component {
      */
     validateForm() {
         //    Validate driveName and other parameters
-        const {driveNameIsValid, drivePrefix, isValid} = this.state;
+        const { driveNameIsValid, drivePrefix, isValid } = this.state;
         let flag = true;
 
         if (!driveNameIsValid) {
@@ -390,7 +420,7 @@ class NewDrive extends React.Component {
      */
     toggleAuthModal() {
         this.setState((state, props) => {
-            return {authModalIsVisible: !state.authModalIsVisible}
+            return { authModalIsVisible: !state.authModalIsVisible }
         });
     }
 
@@ -413,7 +443,7 @@ class NewDrive extends React.Component {
      */
     stopAuthentication() {
         this.setState((state, props) => {
-            return {authModalIsVisible: false}
+            return { authModalIsVisible: false }
         });
         clearInterval(this.configCheckInterval);
 
@@ -427,8 +457,8 @@ class NewDrive extends React.Component {
         e && e.preventDefault();
         // console.log("Submitted form");
 
-        const {formValues, drivePrefix} = this.state;
-        const {providers} = this.props;
+        const { formValues, drivePrefix } = this.state;
+        const { providers } = this.props;
 
 
         if (this.validateForm()) {
@@ -457,7 +487,7 @@ class NewDrive extends React.Component {
                         });
                         if (defaultValueObj) {
 
-                            const {DefaultStr} = defaultValueObj;
+                            const { DefaultStr } = defaultValueObj;
                             if (value !== DefaultStr) {
                                 // console.log(`${value} !== ${DefaultStr}`);
                                 finalParameterValues[key] = value;
@@ -478,7 +508,7 @@ class NewDrive extends React.Component {
                     // console.log("Validated form");
                     this.startAuthentication();
                     try {
-                        const {drivePrefix} = this.props.match.params;
+                        const { drivePrefix } = this.props.match.params;
 
                         if (!drivePrefix) {
 
@@ -490,7 +520,10 @@ class NewDrive extends React.Component {
                         }
 
                     } catch (err) {
-                        toast.error(`Error creating config. ${err}`, {
+                        toast.error(`${intl.formatMessage({
+                            id: "RemoteManagement.Newdrive.Newdrive.errorCreatingConfig",
+                            defaultMessage: "Error creating config.",
+                        })}${err}`, {
                             autoClose: false
                         });
                         this.stopAuthentication();
@@ -517,7 +550,7 @@ class NewDrive extends React.Component {
      * Clearing the driveName and drivePrefix automatically clears the inputs as well.
      * */
     clearForm = _ => {
-        this.setState({driveName: "", drivePrefix: ""})
+        this.setState({ driveName: "", drivePrefix: "" })
     };
 
 
@@ -525,17 +558,17 @@ class NewDrive extends React.Component {
      * Change the name of the drive. Check if it already exists, if not, allow to be changes, else set error.
      * */
     changeName = e => {
-        const {driveNameIsEditable} = this.state;
+        const { driveNameIsEditable } = this.state;
         const value = e.target.value;
         if (driveNameIsEditable && validateDriveName(value)) {
 
-            this.setState({driveName: value}, () => {
+            this.setState({ driveName: value }, () => {
 
                 if (value === undefined || value === "") {
-                    this.setState({driveNameIsValid: false});
+                    this.setState({ driveNameIsValid: false });
                 } else {
 
-                    axiosInstance.post(urls.getConfigForRemote, {name: value}).then((response) => {
+                    axiosInstance.post(urls.getConfigForRemote, { name: value }).then((response) => {
                         let errors = this.state.formErrors;
                         let isValid = isEmpty(response.data);
                         if (isValid) {
@@ -544,14 +577,14 @@ class NewDrive extends React.Component {
                             errors["driveName"] = "Duplicate";
 
                         }
-                        this.setState({formErrors: errors, driveNameIsValid: isValid});
+                        this.setState({ formErrors: errors, driveNameIsValid: isValid });
                     });
                 }
 
             });
 
         } else {
-            this.setState((prevState) => ({formErrors: {...prevState.formErrors, "driveName": "Cannot edit name"}}))
+            this.setState((prevState) => ({ formErrors: { ...prevState.formErrors, "driveName": "Cannot edit name" } }))
         }
     };
 
@@ -561,9 +594,9 @@ class NewDrive extends React.Component {
      */
     openAdvancedSettings = e => {
         if (this.state.advancedOptions) {
-            this.setState({colAdvanced: true});
+            this.setState({ colAdvanced: true });
         } else {
-            this.configEndDiv.scrollIntoView({behavior: "smooth"});
+            this.configEndDiv.scrollIntoView({ behavior: "smooth" });
         }
     };
 
@@ -573,7 +606,7 @@ class NewDrive extends React.Component {
      * */
 
     componentDidMount() {
-        const {drivePrefix} = this.props.match.params;
+        const { drivePrefix } = this.props.match.params;
 
 
         if (!this.props.providers || this.props.providers.length < 1)
@@ -581,14 +614,14 @@ class NewDrive extends React.Component {
 
         if (drivePrefix) {
             //Edit Mode
-            this.setState({driveName: drivePrefix, driveNameIsValid: true, driveNameIsEditable: false});
-            axiosInstance.post(urls.getConfigForRemote, {name: drivePrefix}).then(
+            this.setState({ driveName: drivePrefix, driveNameIsValid: true, driveNameIsEditable: false });
+            axiosInstance.post(urls.getConfigForRemote, { name: drivePrefix }).then(
                 (res) => {
                     console.log(res);
-                    this.changeDriveType(undefined, {newValue: res.data.type});
+                    this.changeDriveType(undefined, { newValue: res.data.type });
 
                     this.setState((prevState) => ({
-                        formValues: {...prevState.formValues, ...res.data}
+                        formValues: { ...prevState.formValues, ...res.data }
                     }))
 
                 }
@@ -606,7 +639,7 @@ class NewDrive extends React.Component {
     }
 
     gotoNextStep = () => {
-        const {currentStepNumber, advancedOptions} = this.state;
+        const { currentStepNumber, advancedOptions } = this.state;
         if ((advancedOptions && currentStepNumber === 3) || (!advancedOptions && currentStepNumber === 2)) {
             this.handleSubmit(null);
         } else {
@@ -615,22 +648,31 @@ class NewDrive extends React.Component {
     };
 
     gotoPrevStep = () => {
-        const {currentStepNumber} = this.state;
+        const { currentStepNumber } = this.state;
         this.setCurrentStep(currentStepNumber - 1);
     };
 
 
     setCurrentStep = (stepNo) => {
-        this.setState({currentStepNumber: stepNo});
+        this.setState({ currentStepNumber: stepNo });
 
     };
 
-    StepShowCase = ({currentStepNumber}) => {
+    StepShowCase = ({ currentStepNumber }) => {
         const buttonActiveClassName = "step-active";
         const stepTitles = [
-            "Set up Remote Config",
-            "Set up Drive",
-            "Advanced Config"
+            intl.formatMessage({
+                id: "RemoteManagement.Newdrive.Newdrive.remoteConfig",
+                defaultMessage: "Set up Remote Config",
+            }),
+            intl.formatMessage({
+                id: "RemoteManagement.Newdrive.Newdrive.Drive",
+                defaultMessage: "Set up Drive",
+            }),
+            intl.formatMessage({
+                id: "RemoteManagement.Newdrive.Newdrive.advancedConfig",
+                defaultMessage: "Advanced Config",
+            }) 
         ];
 
         return (
@@ -644,7 +686,7 @@ class NewDrive extends React.Component {
                                     className={"text-center " + ((currentStepNumber === idx) ? buttonActiveClassName : "")}
                                     md={2} sm={4}>
                                     <button className="btn btn-step-count"
-                                            onClick={() => this.setCurrentStep(idx)}>{idx}</button>
+                                        onClick={() => this.setCurrentStep(idx)}>{idx}</button>
                                     <h4>{item}</h4>
                                 </Col>
                                 {idx !== stepTitles.length && <Col md={3} className={"d-none d-md-block"}>
@@ -685,41 +727,67 @@ class NewDrive extends React.Component {
 
 
     render() {
-        const {drivePrefix, advancedOptions, driveName, driveNameIsValid, currentStepNumber} = this.state;
-        const {providers} = this.props;
+        const { drivePrefix, advancedOptions, driveName, driveNameIsValid, currentStepNumber } = this.state;
+        const { providers } = this.props;
         return (
             <div data-test="newDriveComponent">
                 <ErrorBoundary>
-                    <p>This 3 step process will guide you through creating a new config. For auto config, leave the
-                        parameters as it is.</p>
-                    <this.StepShowCase currentStepNumber={currentStepNumber}/>
+                    <p>
+                        {intl.formatMessage({
+                            id: "RemoteManagement.Newdrive.Newdrive.3step",
+                            defaultMessage: "This 3 step process will guide you through creating a new config. For auto config, leave the parameters as it is.",
+                        })}
+                    </p>
+                    <this.StepShowCase currentStepNumber={currentStepNumber} />
                     <Collapse isOpen={currentStepNumber === 1}>
                         <Card>
 
                             <CardBody>
-                                <CustomInput label="Name of this drive (For your reference)"
-                                             changeHandler={this.changeName} value={driveName}
-                                             placeholder={"Enter a name"} name="name" id="driveName"
-                                             isValid={driveNameIsValid}/>
+                                <CustomInput label=
+                                    {intl.formatMessage({
+                                        id: "RemoteManagement.Newdrive.Newdrive.Nameofthisdrive",
+                                        defaultMessage: "Name of this drive (For your reference)",
+                                    })}
+                                    changeHandler={this.changeName} value={driveName}
+                                    //placeholder={"Enter a name"}
+                                    placeholder={intl.formatMessage({
+                                        id: "RemoteManagement.Newdrive.Newdrive.enterAName",
+                                        defaultMessage: "Enter a name",
+                                    })}
+                                    name="name" id="driveName"
+                                    isValid={driveNameIsValid} />
 
                                 <FormGroup row>
-                                    <Label for="driveType" sm={5}>Select</Label>
+                                    <Label for="driveType" sm={5}>
+                                        {intl.formatMessage({
+                                            id: "RemoteManagement.Newdrive.Newdrive.Select",
+                                            defaultMessage: "Select",
+                                        })}
+                                    </Label>
                                     <Col sm={7}>
                                         <ProviderAutoSuggest suggestions={providers} value={drivePrefix}
-                                                             onChange={this.changeDriveType}/>
+                                            onChange={this.changeDriveType} />
                                     </Col>
                                 </FormGroup>
                                 <FormGroup row>
                                     <Col sm={3}>
-                                        <Label for="inputDriveName">Docs are available at </Label>{' '}
+                                        <Label for="inputDriveName">
+                                            {intl.formatMessage({
+                                                id: "RemoteManagement.Newdrive.Newdrive.Docsareavailableat",
+                                                defaultMessage: "Docs are available at",
+                                            })}
+                                        </Label>{' '}
                                         <a href="https://rclone.org/commands/rclone_config/">Rclone Config</a>
                                     </Col>
                                 </FormGroup>
                                 <div className="clearfix">
                                     <div className="float-right">
-
-                                        <Button className="ml-3 btn-blue" onClick={this.gotoNextStep}>Next</Button>
-
+                                        <Button className="ml-3 btn-blue" onClick={this.gotoNextStep}>
+                                            {intl.formatMessage({
+                                                id: "RemoteManagement.Newdrive.Newdrive.Next",
+                                                defaultMessage: "Next",
+                                            })}
+                                        </Button>
                                     </div>
                                 </div>
                             </CardBody>
@@ -732,19 +800,32 @@ class NewDrive extends React.Component {
                             {/* <div ref={(el) => this.setupDriveDiv = el}/> */}
                             <CardBody>
                                 <DriveParameters drivePrefix={drivePrefix} loadAdvanced={false}
-                                                 changeHandler={this.handleInputChange}
-                                                 errorsMap={this.state.formErrors}
-                                                 isValidMap={this.state.isValid}
-                                                 currentValues={this.state.formValues} config={providers}/>
+                                    changeHandler={this.handleInputChange}
+                                    errorsMap={this.state.formErrors}
+                                    isValidMap={this.state.isValid}
+                                    currentValues={this.state.formValues} config={providers} />
 
                                 <div className="clearfix">
                                     <div className="float-right">
                                         <Input type="checkbox" value={advancedOptions}
-                                               onChange={this.editAdvancedOptions}/><span className="mr-3">Edit Advanced Options</span>
-                                        <Button className="btn-no-background" onClick={this.gotoPrevStep}>Go
-                                            back</Button>
-
-                                        <Button className="ml-3 btn-blue" onClick={this.gotoNextStep}>Next</Button>
+                                            onChange={this.editAdvancedOptions} /><span className="mr-3">
+                                            {intl.formatMessage({
+                                                id: "RemoteManagement.Newdrive.Newdrive.EditAdvancedOptionse",
+                                                defaultMessage: "Edit Advanced Options",
+                                            })}
+                                        </span>
+                                        <Button className="btn-no-background" onClick={this.gotoPrevStep}>
+                                            {intl.formatMessage({
+                                                id: "RemoteManagement.Newdrive.Newdrive.goBack",
+                                                defaultMessage: "Go Back",
+                                            })}
+                                        </Button>
+                                        <Button className="ml-3 btn-blue" onClick={this.gotoNextStep}>
+                                            {intl.formatMessage({
+                                                id: "RemoteManagement.Newdrive.Newdrive.Next",
+                                                defaultMessage: "Next",
+                                            })}
+                                        </Button>
 
                                     </div>
                                 </div>
@@ -766,19 +847,33 @@ class NewDrive extends React.Component {
 
                             <CardBody>
                                 <DriveParameters drivePrefix={drivePrefix} loadAdvanced={true}
-                                                 changeHandler={this.handleInputChange}
-                                                 errorsMap={this.state.formErrors}
-                                                 isValidMap={this.state.isValid}
-                                                 currentValues={this.state.formValues} config={providers}/>
+                                    changeHandler={this.handleInputChange}
+                                    errorsMap={this.state.formErrors}
+                                    isValidMap={this.state.isValid}
+                                    currentValues={this.state.formValues} config={providers} />
 
                                 <div className="clearfix">
                                     <div className="float-right">
                                         <Input type="checkbox" value={advancedOptions}
-                                               onChange={this.editAdvancedOptions}/><span className="mr-3">Edit Advanced Options</span>
-                                        <Button className="btn-no-background" onClick={this.gotoPrevStep}>Go
-                                            back</Button>
+                                            onChange={this.editAdvancedOptions} /><span className="mr-3">
+                                            {intl.formatMessage({
+                                                id: "RemoteManagement.Newdrive.Newdrive.EditAdvancedOptionse",
+                                                defaultMessage: "Edit Advanced Options",
+                                            })}
+                                        </span>
+                                        <Button className="btn-no-background" onClick={this.gotoPrevStep}>
+                                            {intl.formatMessage({
+                                                id: "RemoteManagement.Newdrive.Newdrive.goBack",
+                                                defaultMessage: "Go Back",
+                                            })}
+                                        </Button>
 
-                                        <Button className="ml-3 btn-blue" onClick={this.gotoNextStep}>Next</Button>
+                                        <Button className="ml-3 btn-blue" onClick={this.gotoNextStep}>
+                                            {intl.formatMessage({
+                                                id: "RemoteManagement.Newdrive.Newdrive.Next",
+                                                defaultMessage: "Next",
+                                            })}
+                                        </Button>
                                     </div>
                                 </div>
                             </CardBody>
@@ -795,7 +890,7 @@ class NewDrive extends React.Component {
 
                             </div>
                         </div> */}
-                    <NewDriveAuthModal isVisible={this.state.authModalIsVisible} closeModal={this.toggleAuthModal}/>
+                    <NewDriveAuthModal isVisible={this.state.authModalIsVisible} closeModal={this.toggleAuthModal} />
                 </ErrorBoundary>
             </div>);
     }
@@ -819,4 +914,4 @@ NewDrive.defaultProps = {
     isEdit: false,
 };
 
-export default connect(mapStateToProps, {getProviders})(NewDrive);
+export default connect(mapStateToProps, { getProviders })(NewDrive);

@@ -1,6 +1,7 @@
 import Autosuggest from 'react-autosuggest';
 import React from "react";
 import {findFromConfig} from "../../../utils/Tools";
+import { intl } from "../../../utils/intl";
 
 // Teach Autosuggest how to calculate suggestions for any given input value.
 const getSuggestions = (config, value) => {
@@ -73,7 +74,11 @@ class ProviderAutoSuggest extends React.Component {
 
         // Autosuggest will pass through all these props to the input.
         const inputProps = {
-            placeholder: 'Type a provider type',
+            placeholder: 
+            intl.formatMessage({
+                id:"RemoteManagement.Newdrive.ProviderAutoSuggest.providerType",
+                defaultMessage: "Type a provider type",
+            }),
             value: renderVal,
             onChange: onChange
         };

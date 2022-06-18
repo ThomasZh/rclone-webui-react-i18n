@@ -7,7 +7,7 @@ import {addColonAtLast} from "../../../utils/Tools";
 import {connect} from "react-redux";
 import {getFilesForContainerID} from "../../../actions/explorerStateActions";
 import urls from "../../../utils/API/endpoint";
-
+import { intl } from "../../../utils/intl";
 
 class NewFolder extends React.Component {
 
@@ -62,15 +62,24 @@ class NewFolder extends React.Component {
             this.disableForm(false);
 
             this.toggle();
-            toast.info(`Folder created: ${remotePath}`);
+            toast.info(`${intl.formatMessage({
+                id: "Base.FileOperations.NewFolder.FolderCreated",
+                defaultMessage: "Folder created:",
+            })}  ${remotePath}`);
             this.props.getFilesForContainerID(this.props.containerID);
         } catch (error) {
             this.disableForm(false);
 
             if (error.response) {
-                toast.error(`Error creating folder: ${error.response.data.error}`)
+                toast.error(`${intl.formatMessage({
+                    id: "Base.FileOperations.NewFolder.ErrorFolderCreat",
+                    defaultMessage: "Error creating folder:",
+                })} ${error.response.data.error}`)
             } else {
-                toast.error(`Error creating folder: ${error}`);
+                toast.error(`${intl.formatMessage({
+                    id: "Base.FileOperations.NewFolder.ErrorFolderCreat",
+                    defaultMessage: "Error creating folder:",
+                })} ${error}`);
             }
 
             // console.log(`Error occurred at operations/mkdir: ${e}, ${e.response}`);
@@ -100,11 +109,17 @@ class NewFolder extends React.Component {
 
             <Modal isOpen={isVisible} toggle={this.toggle} data-test="newFolderComponent">
                 <Form onSubmit={this.handleSubmit}>
-                    <ModalHeader toggle={this.toggle}>Create New folder
+                    <ModalHeader toggle={this.toggle}>{intl.formatMessage({
+                    id: "Base.FileOperations.NewFolder.CreateNewFolder",
+                    defaultMessage: "Create New folder",
+                })}
                         at {currentPath.remoteName}: {currentPath.remotePath}</ModalHeader>
                     <ModalBody>
                         <FormGroup row>
-                            <Label for="folderName" sm={5}>Enter the name</Label>
+                            <Label for="folderName" sm={5}>{intl.formatMessage({
+                    id: "Base.FileOperations.NewFolder.EnterTheName",
+                    defaultMessage: "Enter the name",
+                })}</Label>
                             <Col sm={7}>
                                 <Input type="text" name="folderName" id="folderName" value={name}
                                        onChange={this.changeName} required autoFocus>
@@ -113,7 +128,10 @@ class NewFolder extends React.Component {
                         </FormGroup>
                         <div className="clearfix">
                             <Button type="submit" color="success" className="float-right" disabled={disableForm}><i
-                                className="fa fa-check fa-lg"/>Create folder</Button>
+                                className="fa fa-check fa-lg"/>{intl.formatMessage({
+                                    id: "Base.FileOperations.NewFolder.CreateFolder",
+                                    defaultMessage: "Create folder",
+                                })}</Button>
                         </div>
                         {/*<Input type={"text"} value={name} onChange={this.changeName}*/}
                         {/*       ref={(input) => this.NameInput = input}/>*/}

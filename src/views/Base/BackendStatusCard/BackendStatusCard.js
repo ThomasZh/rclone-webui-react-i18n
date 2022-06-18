@@ -1,12 +1,12 @@
 import React from "react";
-import {Button, Card, CardBody, CardHeader} from "reactstrap";
+import { Button, Card, CardBody, CardHeader } from "reactstrap";
 import * as PropTypes from "prop-types";
 import ReactDOM from "react-dom";
 import RunningJobs from "../RunningJobs";
-import {connect} from "react-redux";
-import {enableCheckStatus, getStatus} from "../../../actions/statusActions";
-import {IP_ADDRESS_KEY, MODAL_ROOT_ELEMENT, STATUS_REFRESH_TIMEOUT, USER_NAME_KEY} from "../../../utils/Constants";
-
+import { connect } from "react-redux";
+import { enableCheckStatus, getStatus } from "../../../actions/statusActions";
+import { IP_ADDRESS_KEY, MODAL_ROOT_ELEMENT, STATUS_REFRESH_TIMEOUT, USER_NAME_KEY } from "../../../utils/Constants";
+import { intl } from "../../../utils/intl";
 /**
  * Functional component Modal which is placed in the element with id "modal-root" in index.html using React.createPortal
  * @returns {{children, implementation, containerInfo, $$typeof, key}}
@@ -14,7 +14,7 @@ import {IP_ADDRESS_KEY, MODAL_ROOT_ELEMENT, STATUS_REFRESH_TIMEOUT, USER_NAME_KE
  */
 function TaskModal() {
     return ReactDOM.createPortal((
-        <RunningJobs mode={"modal"}/>
+        <RunningJobs mode={"modal"} />
 
     ), document.getElementById(MODAL_ROOT_ELEMENT));
 }
@@ -42,7 +42,7 @@ class BackendStatusCard extends React.Component {
      * Enable or disable checking of status request by http request to the backend.
      */
     toggleCheckStatus = () => {
-        const {checkStatus, enableCheckStatus} = this.props;
+        const { checkStatus, enableCheckStatus } = this.props;
         console.log(checkStatus, enableCheckStatus);
         enableCheckStatus(!checkStatus);
     };
@@ -54,7 +54,7 @@ class BackendStatusCard extends React.Component {
      * @returns {*}
      */
     render() {
-        const {isConnected, mode, checkStatus} = this.props;
+        const { isConnected, mode, checkStatus } = this.props;
 
         const ipAddress = localStorage.getItem(IP_ADDRESS_KEY);
         const username = localStorage.getItem(USER_NAME_KEY);
@@ -66,11 +66,14 @@ class BackendStatusCard extends React.Component {
                 <Card
                     className={"text-center " + (isConnected ? "card-accent-info" : "card-accent-warning")}>
                     <CardHeader>
-                        Overview
+                        {intl.formatMessage({
+                            id: "Base.BackendStatusCard.BackendStatusCard.Overview",
+                            defaultMessage: "Overview:",
+                        })}
                     </CardHeader>
                     <CardBody>
                         <StatusText checkStatus={checkStatus} connectivityStatus={isConnected} ipAddress={ipAddress}
-                                    userName={username}/>
+                            userName={username} />
 
                     </CardBody>
                 </Card>
@@ -79,9 +82,21 @@ class BackendStatusCard extends React.Component {
             return (
                 <React.Fragment>
                     <Button type="primary" onClick={this.toggleCheckStatus}
-                            className={isConnected ? "bg-info  d-none d-lg-block" : "bg-warning d-none d-lg-block"}> {checkStatus ? isConnected ? "CONNECTED" : "DISCONNECTED" : "DISABLED"}</Button>
+                        className={isConnected ? "bg-info  d-none d-lg-block" : "bg-warning d-none d-lg-block"}> {checkStatus ? isConnected ?
+                            intl.formatMessage({
+                                id: "Base.BackendStatusCard.BackendStatusCard.Connected",
+                                defaultMessage: "CONNECTED",
+                            }) :
+                            intl.formatMessage({
+                                id: "Base.BackendStatusCard.BackendStatusCard.DISCONNECTED",
+                                defaultMessage: "DISCONNECTED",
+                            }) :
+                            intl.formatMessage({
+                                id: "Base.BackendStatusCard.BackendStatusCard.DISABLED",
+                                defaultMessage: "DISABLED",
+                            }) }</Button>
                     {/*Show current tasks in the side modal*/}
-                    <TaskModal/>
+                    <TaskModal />
                 </React.Fragment>
             );
     }
@@ -96,30 +111,57 @@ class BackendStatusCard extends React.Component {
  * @returns {*}
  * @constructor
  */
-function StatusText({connectivityStatus, checkStatus, ipAddress, userName}) {
+function StatusText({ connectivityStatus, checkStatus, ipAddress, userName }) {
 
     let statusText = "";
-    if(!checkStatus){
-        statusText = "Not monitoring connectivity status. Tap the icon in navbar to start.";
-    }else if(connectivityStatus){
+    if (!checkStatus) {
+        statusText =
+            intl.formatMessage({
+                id: "Base.BackendStatusCard.BackendStatusCard.notMonitoring",
+                defaultMessage: "Not monitoring connectivity status. Tap the icon in navbar to start.",
+            });
+    } else if (connectivityStatus) {
         // Connected to backend
-        statusText = "rClone Backend is connected and working as expected";
-    }else{
-        statusText = "Cannot connect to rclone backend. There is a problem with connecting to {ipAddress}."
+        statusText =
+            intl.formatMessage({
+                id: "Base.BackendStatusCard.BackendStatusCard.backendIsConnected",
+                defaultMessage: "rClone Backend is connected and working as expected",
+            });
+    } else {
+        statusText =
+            intl.formatMessage({
+                id: "Base.BackendStatusCard.BackendStatusCard.problemWithConnecting",
+                defaultMessage: "Cannot connect to rclone backend. There is a problem with connecting to {ipAddress}.",
+            });
     }
 
     return (
         <>
             <p>
-                <span className={"card-subtitle"}>Status: {" "}</span>
+                <span className={"card-subtitle"}>
+                    {intl.formatMessage({
+                        id: "Base.BackendStatusCard.BackendStatusCard.Status",
+                        defaultMessage: "Status:",
+                    })}
+                    {" "}</span>
                 <span className="card-text">{statusText}</span>
             </p>
             <p>
-                <span className={"card-subtitle"}>Current IP Address: {" "}</span>
+                <span className={"card-subtitle"}>
+                    {intl.formatMessage({
+                        id: "Base.BackendStatusCard.BackendStatusCard.currentIpAddress",
+                        defaultMessage: "Current IP Address:",
+                    })}
+                    {" "}</span>
                 <span className="card-text">{ipAddress}</span>
             </p>
             <p>
-                <span className={"card-subtitle"}>Username: {" "}</span>
+                <span className={"card-subtitle"}>
+                    {intl.formatMessage({
+                        id: "Base.BackendStatusCard.BackendStatusCard.Username",
+                        defaultMessage: "Username:",
+                    })}
+                    {" "}</span>
                 <span className="card-text">{userName}</span>
             </p>
         </>
@@ -165,4 +207,4 @@ const mapStateToProps = state => ({
     checkStatus: state.status.checkStatus
 });
 
-export default connect(mapStateToProps, {getStatus, enableCheckStatus})(BackendStatusCard);
+export default connect(mapStateToProps, { getStatus, enableCheckStatus })(BackendStatusCard);

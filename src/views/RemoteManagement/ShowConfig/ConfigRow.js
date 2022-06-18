@@ -1,16 +1,16 @@
 import React from "react";
 import axiosInstance from "../../../utils/API/API";
-import {Button} from "reactstrap";
+import { Button } from "reactstrap";
 import * as  PropTypes from "prop-types";
-import {toast} from "react-toastify";
-import {withRouter} from "react-router-dom";
+import { toast } from "react-toastify";
+import { withRouter } from "react-router-dom";
 import urls from "../../../utils/API/endpoint";
-
+import { intl } from "../../../utils/intl";
 
 class ConfigRow extends React.Component {
     constructor(props, context) {
         super(props, context);
-        let {remote, remoteName} = this.props;
+        let { remote, remoteName } = this.props;
         remote["name"] = remoteName;
         this.state = {
             remote: remote
@@ -22,27 +22,38 @@ class ConfigRow extends React.Component {
 
 
     onUpdateClicked = () => {
-        const {name} = this.state.remote;
+        const { name } = this.state.remote;
         this.props.history.push("/newdrive/edit/" + name);
     };
 
     // TODO: Delete config functionality
     onDeleteClicked() {
-        const {name} = this.state.remote;
-        let {refreshHandle} = this.props;
+        const { name } = this.state.remote;
+        let { refreshHandle } = this.props;
 
         // Delete http request
-        if (window.confirm(`Are you sure you wish to delete ${name}? You cannot restore it once it is deleted.`)) {
-
-            axiosInstance.post(urls.deleteConfig, {name: name}).then(
+        if (window.confirm(`${intl.formatMessage({
+            id: "RemoteManagement.ShowConfig.ConfigRow.areYouSure",
+            defaultMessage: "Are you sure you wish to delete",
+        })} ${name}${intl.formatMessage({
+            id: "RemoteManagement.ShowConfig.ConfigRow.cannotRestore",
+            defaultMessage: "? You cannot restore it once it is deleted.",
+        })}`)) {
+            axiosInstance.post(urls.deleteConfig, { name: name }).then(
                 (res) => {
                     // console.log(res);
                     // Refresh the parent component
                     refreshHandle();
-                    toast.info('Config deleted');
+                    toast.info(`${intl.formatMessage({
+                        id: "RemoteManagement.ShowConfig.ConfigRow.configDelete",
+                        defaultMessage: "Config delete",
+                    })}`);
                 }, (err) => {
                     // console.log(`Error occurred: ${err}`);
-                    toast.error('Error deleting config')
+                    toast.error(`${intl.formatMessage({
+                        id: "RemoteManagement.ShowConfig.ConfigRow.errorConfigDelete",
+                        defaultMessage: "Error deleting config",
+                    })}`)
                 }
             )
         }
@@ -50,17 +61,26 @@ class ConfigRow extends React.Component {
 
 
     render() {
-        const {name, type} = this.state.remote;
-        const {sequenceNumber} = this.props;
+        const { name, type } = this.state.remote;
+        const { sequenceNumber } = this.props;
         return (
             <tr data-test="configRowComponent">
                 <th scope="row">{sequenceNumber}</th>
                 <td>{name}</td>
                 <td>{type}</td>
                 <td>
-
-                    <Button className={"bg-info mr-2"} onClick={this.onUpdateClicked}>Update</Button>
-                    <Button className={"bg-danger"} onClick={this.onDeleteClicked}>Delete</Button>
+                    <Button className={"bg-info mr-2"} onClick={this.onUpdateClicked}>
+                        {intl.formatMessage({
+                            id: "RemoteManagement.ShowConfig.ConfigRow.Update",
+                            defaultMessage: "Update",
+                        })}
+                    </Button>
+                    <Button className={"bg-danger"} onClick={this.onDeleteClicked}>
+                        {intl.formatMessage({
+                            id: "RemoteManagement.ShowConfig.ConfigRow.Delete",
+                            defaultMessage: "Delete",
+                        })}
+                    </Button>
                 </td>
             </tr>
         );

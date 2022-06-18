@@ -19,7 +19,7 @@ import {
 } from "reactstrap";
 import NewFolder from "../NewFolder/NewFolder";
 import PropTypes from "prop-types";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 import {
 	changeGridMode,
 	changePath,
@@ -30,19 +30,20 @@ import {
 	setLoadImages,
 	setSearchQuery
 } from "../../../actions/explorerStateActions";
-import {visibilityFilteringOptions} from "../../../utils/Constants";
-import {getAboutRemote} from "../../../actions/providerStatusActions";
-import {Doughnut} from "react-chartjs-2";
-import {bytesToGB, isEmpty} from "../../../utils/Tools";
-import {toast} from "react-toastify";
-import {PROP_FS_INFO} from "../../../utils/RclonePropTypes";
+import { visibilityFilteringOptions } from "../../../utils/Constants";
+import { getAboutRemote } from "../../../actions/providerStatusActions";
+import { Doughnut } from "react-chartjs-2";
+import { bytesToGB, isEmpty } from "../../../utils/Tools";
+import { toast } from "react-toastify";
+import { PROP_FS_INFO } from "../../../utils/RclonePropTypes";
 import newFolderImg from '../../../assets/img/new-folder.png';
-import {cleanTrashForRemote} from "rclone-api";
-import {createSelector} from "reselect";
+import { cleanTrashForRemote } from "rclone-api";
+import { createSelector } from "reselect";
 import FileUploadModal from "./FileUploadModal"; // with import
+import { intl } from "../../../utils/intl";
 
 function getUrl(currentPath) {
-	const {remoteName, remotePath} = currentPath;
+	const { remoteName, remotePath } = currentPath;
 	return `${remoteName}:/${remotePath}`;
 }
 
@@ -65,27 +66,30 @@ class FileOperations extends React.Component {
 
 	componentDidUpdate(prevProps, prevState, snapshot) {
 		if (prevProps.currentPath !== this.props.currentPath) {
-			this.setState({tempUrl: getUrl(this.props.currentPath)})
+			this.setState({ tempUrl: getUrl(this.props.currentPath) })
 		}
 	}
 
 	openNewFolderModal = () => {
-		const {fsInfo} = this.props;
+		const { fsInfo } = this.props;
 		if (fsInfo && fsInfo.Features && fsInfo.Features.CanHaveEmptyDirectories) {
-			this.setState({newFolderModalIsVisible: true});
+			this.setState({ newFolderModalIsVisible: true });
 		} else {
-			toast.error("This remote cannot have empty directories");
+			toast.error(intl.formatMessage({
+				id: "Base.FileOperations.FileOperations.EmptyDirectories",
+				defaultMessage: "This remote cannot have empty directories"
+			}));
 		}
 	};
 
 	closeNewFolderModal = () => {
-		this.setState({newFolderModalIsVisible: false});
+		this.setState({ newFolderModalIsVisible: false });
 	};
 
 	handleChangeFilter = (e) => {
 		const newFilter = e.target.value;
 
-		const {changeVisibilityFilter} = this.props;
+		const { changeVisibilityFilter } = this.props;
 
 		changeVisibilityFilter(this.props.containerID, newFilter);
 
@@ -93,13 +97,13 @@ class FileOperations extends React.Component {
 
 
 	handleChangeGridMode = () => {
-		const {gridMode, changeGridMode, containerID} = this.props;
+		const { gridMode, changeGridMode, containerID } = this.props;
 		changeGridMode(containerID, gridMode === "list" ? "card" : "list");
 	};
 
 	changeSearch = (e) => {
 		e.preventDefault();
-		const {containerID, setSearchQuery} = this.props;
+		const { containerID, setSearchQuery } = this.props;
 		setSearchQuery(containerID, e.target.value);
 	};
 
@@ -113,7 +117,7 @@ class FileOperations extends React.Component {
 	};
 
 	toggleAboutModal = () => {
-		const {fsInfo} = this.props;
+		const { fsInfo } = this.props;
 		if (fsInfo && fsInfo.Features && fsInfo.Features.About) {
 			this.setState((prevState) => {
 				return {
@@ -121,59 +125,74 @@ class FileOperations extends React.Component {
 				}
 			}, () => {
 				if (this.state.isAboutModalOpen) {
-					const {containerID} = this.props;
+					const { containerID } = this.props;
 					this.props.getAboutRemote(containerID);
 				}
 			});
 		} else {
-			toast.error("This remote does not support About");
+			toast.error(intl.formatMessage({
+				id: "Base.FileOperations.FileOperations.NotSupportAbout",
+				defaultMessage: "This remote does not support About"
+			}) );
 		}
 
 	};
 
 	handleCleanTrash = () => {
-		const {fsInfo} = this.props;
+		const { fsInfo } = this.props;
 		if (fsInfo && fsInfo.Features && fsInfo.Features.CleanUp) {
 
-			if (window.confirm("Are you sure you want to clear the trash. This operation cannot be undone")) {
+			if (window.confirm(intl.formatMessage({
+				id: "Base.FileOperations.FileOperations.Undone",
+				defaultMessage: "Are you sure you want to clear the trash. This operation cannot be undone"
+			}))) {
 
-				const {currentPath, containerID} = this.props;
-				let {remoteName} = currentPath;
+				const { currentPath, containerID } = this.props;
+				let { remoteName } = currentPath;
 
 				cleanTrashForRemote(remoteName).then((res) => {
-						if (res.status === 200) {
-							toast('Trash Cleaned');
-							this.props.getAbout(containerID);
+					if (res.status === 200) {
+						toast(intl.formatMessage({
+							id: "Base.FileOperations.FileOperations.TrashCleaned",
+							defaultMessage: "Trash Cleaned"
+						}));
+						this.props.getAbout(containerID);
 
-						}
-					},
+					}
+				},
 					(err) => {
-						toast.error("Error clearing trash " + err);
+						toast.error(intl.formatMessage({
+							id: "Base.FileOperations.FileOperations.Errorclearingtrash",
+							defaultMessage: "Error clearing trash "
+						}) + err);
 					}
 				)
 			}
 		} else {
 			// Cleanup is not allowed
-			toast.error("Clearing trash is not allowed on this remote");
+			toast.error(intl.formatMessage({
+				id: "Base.FileOperations.FileOperations.NotAllowedOnRemote",
+				defaultMessage: "Clearing trash is not allowed on this remote"
+			}));
 		}
 	};
 
 	changeLoadMedia = (e) => {
 		e.stopPropagation();
-		const {setLoadImages, containerID, loadImages} = this.props;
+		const { setLoadImages, containerID, loadImages } = this.props;
 		setLoadImages(containerID, !loadImages);
 	};
 
 	handleSearchOpen = () => {
-		const {containerID} = this.props;
+		const { containerID } = this.props;
 		this.setState((prevState) => {
-				if (prevState.searchOpen) {
-					// Clear Search Query if the search is about to close
-					this.props.setSearchQuery(containerID, "");
-				}
-
-				return {searchOpen: !prevState.searchOpen}
+			if (prevState.searchOpen) {
+				// Clear Search Query if the search is about to close
+				this.props.setSearchQuery(containerID, "");
 			}
+
+			return { searchOpen: !prevState.searchOpen }
+		}
 		);
 	};
 
@@ -182,111 +201,133 @@ class FileOperations extends React.Component {
 			tempUrl: e.target.value
 		})
 	onFocusHandle = (_) =>
-		this.setState({isUrlBarFocused: true, tempUrl: getUrl(this.props.currentPath)});
+		this.setState({ isUrlBarFocused: true, tempUrl: getUrl(this.props.currentPath) });
 
 	onBlurHandle = (_) =>
-		this.setState({isUrlBarFocused: false, tempUrl: getUrl(this.props.currentPath)});
+		this.setState({ isUrlBarFocused: false, tempUrl: getUrl(this.props.currentPath) });
 
 	onSubmitUrlChange = (e) => {
 		e.preventDefault();
-		const {changePath, containerID, currentPath} = this.props;
-		const {tempUrl} = this.state;
+		const { changePath, containerID, currentPath } = this.props;
+		const { tempUrl } = this.state;
 		let urlSplits = tempUrl.split(":/")
 		if (urlSplits && urlSplits[0] && (currentPath.remoteName !== urlSplits[0] || currentPath.remotePath !== urlSplits[1]))
 			changePath(containerID, urlSplits[0], urlSplits[1])
 	}
 
 	render() {
-		const {containerID, getFilesForContainerID, gridMode, navigateFwd, navigateBack, searchQuery, currentPath, doughnutData} = this.props;
-		const {newFolderModalIsVisible, dropdownOpen, isAboutModalOpen, searchOpen, tempUrl, isUrlBarFocused} = this.state;
+		const { containerID, getFilesForContainerID, gridMode, navigateFwd, navigateBack, searchQuery, currentPath, doughnutData } = this.props;
+		const { newFolderModalIsVisible, dropdownOpen, isAboutModalOpen, searchOpen, tempUrl, isUrlBarFocused } = this.state;
 
-		const {remoteName} = currentPath;
+		const { remoteName } = currentPath;
 
 		return (
 			<div className="pl-0 mt-3 mb-1 d-flex justify-content-between align-items-center"
-				 style={{marginLeft: "-15px", marginRight: "-15px"}}>
+				style={{ marginLeft: "-15px", marginRight: "-15px" }}>
 				<div className="d-flex flex-nowrap">
 					<Button color="light" className="mr-1 btn-explorer-action"
-							onClick={() => navigateBack(containerID)}><i
-						className={"fa fa-lg fa-arrow-left"}/></Button>
+						onClick={() => navigateBack(containerID)}><i
+							className={"fa fa-lg fa-arrow-left"} /></Button>
 					<Button color="light" className={"mr-1 btn-explorer-action"}
-							onClick={() => navigateFwd(containerID)}><i
-						className={"fa fa-lg fa-arrow-right"}/></Button>
+						onClick={() => navigateFwd(containerID)}><i
+							className={"fa fa-lg fa-arrow-right"} /></Button>
 					<Button className="mr-1 btn-explorer-action" id="RefreshButton"
-							onClick={() => getFilesForContainerID(containerID)}><i
-						className={"fa fa-lg fa-repeat"}/></Button>
+						onClick={() => getFilesForContainerID(containerID)}><i
+							className={"fa fa-lg fa-repeat"} /></Button>
 					<UncontrolledTooltip placement="right" target="RefreshButton">
-						Refresh Files
+						{intl.formatMessage({
+							id: "Base.FileOperations.FileOperations.refreshFiles",
+							defaultMessage: "Refresh Files",
+						})}
 					</UncontrolledTooltip>
 				</div>
 				<div className="flex-grow-1 pl-1 pr-1 pr-lg-3 pl-lg-3">
 					<Form inline onSubmit={this.onSubmitUrlChange} className="h-100">
-						<Input style={{width: "100%"}} value={tempUrl} onChange={this.onChangeTrial}
-							   onFocus={this.onFocusHandle} onBlur={this.onBlurHandle}/>
+						<Input style={{ width: "100%" }} value={tempUrl} onChange={this.onChangeTrial}
+							onFocus={this.onFocusHandle} onBlur={this.onBlurHandle} />
 						<Button className={isUrlBarFocused ? "" : "d-none"} color="link" type={"submit"}
-								style={{marginLeft: "-45px"}}><i className="fa fa-arrow-right"/></Button>
+							style={{ marginLeft: "-45px" }}><i className="fa fa-arrow-right" /></Button>
 					</Form>
 				</div>
 				<div className="d-flex flex-wrap">
 					{/*<Button className="p-0 float-right" color="link"><i className="fa fa-info-circle"/></Button>*/}
 
 					<Button className="mr-1 btn-explorer-action p-1" id="CreateFolderButton"
-							onClick={this.openNewFolderModal}><img src={newFolderImg} alt="New Folder"
-																   className="fa fa-lg"/> </Button>
+						onClick={this.openNewFolderModal}><img src={newFolderImg} alt="New Folder"
+							className="fa fa-lg" /> </Button>
 					<UncontrolledTooltip placement="bottom" target="CreateFolderButton">
-						Create a new Folder
+						{intl.formatMessage({
+							id: "Base.FileOperations.FileOperations.createANewFolder",
+							defaultMessage: "Create a new Folder",
+						})}
 					</UncontrolledTooltip>
 
 					<ButtonDropdown isOpen={dropdownOpen} toggle={this.toggleDropDown} direction={'down'}
-									id="FilterButton">
+						id="FilterButton">
 						<DropdownToggle className="btn-explorer-action">
-							<i className={"fa fa-lg fa-filter"}/>
+							<i className={"fa fa-lg fa-filter"} />
 						</DropdownToggle>
 						<DropdownMenu>
 							<DropdownItem key={"None"} value={""}
-										  onClick={this.handleChangeFilter}>None</DropdownItem>
+								onClick={this.handleChangeFilter}>
+								{intl.formatMessage({
+									id: "Base.FileOperations.FileOperations.None",
+									defaultMessage: "None",
+								})}
+							</DropdownItem>
 							{
 								this.filterOptions.map((item, _) => {
 									return (<DropdownItem key={item} value={item}
-														  onClick={this.handleChangeFilter}>{item}</DropdownItem>)
+										onClick={this.handleChangeFilter}>{item}</DropdownItem>)
 								})
 							}
 						</DropdownMenu>
 					</ButtonDropdown>
 
 					<Button className="btn-explorer-action" id="ListViewButton"
-							onClick={this.handleChangeGridMode}>
-						<i className={"fa fa-lg " + (gridMode === "card" ? "fa-list" : "fa-th-large")}/>
+						onClick={this.handleChangeGridMode}>
+						<i className={"fa fa-lg " + (gridMode === "card" ? "fa-list" : "fa-th-large")} />
 					</Button>
 					<UncontrolledTooltip placement="right" target="ListViewButton">
-						{(gridMode === "card" ? "List View" : "Card View")}
+						{(gridMode === "card" ?
+							intl.formatMessage({
+								id: "Base.FileOperations.FileOperations.listView",
+								defaultMessage: "List View",
+							}) :
+							intl.formatMessage({
+								id: "Base.FileOperations.FileOperations.cardView",
+								defaultMessage: "Card View",
+							}))}
 					</UncontrolledTooltip>
 
 					<Button className="btn-explorer-action" id="InfoButton"
-							onClick={this.toggleAboutModal}>
-						<i className="fa fa-lg fa-info"/>
+						onClick={this.toggleAboutModal}>
+						<i className="fa fa-lg fa-info" />
 					</Button>
 					<UncontrolledTooltip placement="right" target="InfoButton">
-						Show Remote Info
+						{intl.formatMessage({
+							id: "Base.FileOperations.FileOperations.showRemoteInfo",
+							defaultMessage: "Show Remote Info",
+						})}
 					</UncontrolledTooltip>
-					<FileUploadModal currentPath={currentPath} buttonLabel={"Upload"}
-									 buttonClass={"btn-explorer-action"}/>
+					<FileUploadModal currentPath={currentPath} buttonLabel={"loUpload"}
+						buttonClass={"btn-explorer-action"} />
 					<Form inline>
 						<FormGroup>
 							{searchOpen && <Input type="text" placeholder="Search" value={searchQuery}
-												  className="animate-fade-in"
-												  onChange={this.changeSearch}/>
+								className="animate-fade-in"
+								onChange={this.changeSearch} />
 							}
 							<Button color="" className="mr-1 btn-explorer-action"
-									onClick={this.handleSearchOpen}>
-								<i className={"fa fa-lg " + (searchOpen ? "fa-close" : "fa-search")}/>
+								onClick={this.handleSearchOpen}>
+								<i className={"fa fa-lg " + (searchOpen ? "fa-close" : "fa-search")} />
 							</Button>
 						</FormGroup>
 					</Form>
 
 
 					<NewFolder containerID={containerID} isVisible={newFolderModalIsVisible}
-							   closeModal={this.closeNewFolderModal}/>
+						closeModal={this.closeNewFolderModal} />
 
 					<Modal isOpen={isAboutModalOpen} toggle={this.toggleAboutModal}>
 						<ModalHeader>
@@ -297,15 +338,15 @@ class FileOperations extends React.Component {
 								<Col sm={12}>
 									<div className="chart-wrapper">
 										<p>Space Usage (in GB)</p>
-										{doughnutData && !isEmpty(doughnutData) ? <Doughnut data={doughnutData}/> :
-											<React.Fragment><Spinner color="primary"/>Loading</React.Fragment>}
+										{doughnutData && !isEmpty(doughnutData) ? <Doughnut data={doughnutData} /> :
+											<React.Fragment><Spinner color="primary" />Loading</React.Fragment>}
 									</div>
 								</Col>
 							</Row>
 							<Row>
 								<Col sm={12}>
 									<Button color="danger" onClick={this.handleCleanTrash}>Clean Trash <i
-										className="fa fa-lg fa-trash"/></Button>
+										className="fa fa-lg fa-trash" /></Button>
 								</Col>
 							</Row>
 

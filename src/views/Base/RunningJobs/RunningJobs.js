@@ -53,7 +53,12 @@ function JobCard({ job }) {
   if (name && !isNaN(speed)) {
     return (
       <Card>
-        <CardHeader>Running Jobs</CardHeader>
+        <CardHeader>
+          {intl.formatMessage({
+            id: "Base.RunningJobs.runningJobs",
+            defaultMessage: "Running Jobs",
+          })}
+        </CardHeader>
         <CardBody>
           <p>{name}</p> {/*Name of the file*/}
           <Progress value={percentage} className={"mb-2"}>
@@ -61,22 +66,42 @@ function JobCard({ job }) {
           </Progress>{" "}
           {/*percentage*/}
           <p>
-            <strong>Speed: </strong>
+            <strong>
+              {intl.formatMessage({
+                id: "Base.RunningJobs.Speed",
+                defaultMessage: "Speed:",
+              })}
+            </strong>
             {formatBytes(speed)}PS
           </p>{" "}
           {/*speed*/}
           <p>
-            <strong>Average Speed: </strong>
+            <strong>
+              {intl.formatMessage({
+                id: "Base.RunningJobs.averageSpeed",
+                defaultMessage: "Average Speed:",
+              })}
+            </strong>
             {formatBytes(speedAvg)}PS
           </p>{" "}
           {/*speedAvg*/}
           <p>
-            <strong>Total transferred: </strong>
+            <strong>
+              {intl.formatMessage({
+                id: "Base.RunningJobs.totalTransferred",
+                defaultMessage: "Total transferred:",
+              })}
+            </strong>
             {formatBytes(bytes)}
           </p>{" "}
           {/*bytes: convert to mb*/}
           <p>
-            <strong>Size: </strong>
+            <strong>
+              {intl.formatMessage({
+                id: "Base.RunningJobs.Size",
+                defaultMessage: "Size:",
+              })}
+            </strong>
             {formatBytes(size)}
           </p>
           <p>
@@ -117,7 +142,12 @@ function JobCardRow({ job }) {
             {formatBytes(speedAvg)}PS{" "}
           </Col>
         ) : (
-          <Col lg={12}>Calculating</Col>
+          <Col lg={12}>
+            {intl.formatMessage({
+              id: "Base.RunningJobs.Calculating",
+              defaultMessage: "Calculating",
+            })}
+          </Col>
         )}
       </Row>
       <Row>
@@ -156,35 +186,75 @@ function GlobalStatus({ stats }) {
         <table className="table">
           <tbody>
             <tr>
-              <td className="card-subtitle">Bytes Transferred:</td>
+              <td className="card-subtitle">
+                {intl.formatMessage({
+                  id: "Base.RunningJobs.bytesTransferred",
+                  defaultMessage: "Bytes Transferred:",
+                })}
+              </td>
               <td className="card-text">{formatBytes(bytes)}</td>
             </tr>
             <tr>
-              <td className="card-subtitle">Average Speed:</td>
+              <td className="card-subtitle">
+                {intl.formatMessage({
+                  id: "Base.RunningJobs.averageSpeed",
+                  defaultMessage: "Average Speed:",
+                })}
+              </td>
               <td className="card-text">{formatBytes(speed)}PS</td>
             </tr>
             <tr>
-              <td className="card-subtitle">Checks:</td>
+              <td className="card-subtitle">
+                {intl.formatMessage({
+                  id: "Base.RunningJobs.Checks",
+                  defaultMessage: "Checks:",
+                })}
+              </td>
               <td className="card-text">{checks}</td>
             </tr>
             <tr>
-              <td className="card-subtitle">Deletes:</td>
+              <td className="card-subtitle">
+                {intl.formatMessage({
+                  id: "Base.RunningJobs.Deletes",
+                  defaultMessage: "Deletes:",
+                })}
+              </td>
               <td className="card-text">{deletes}</td>
             </tr>
             <tr>
-              <td className="card-subtitle">Running since:</td>
+              <td className="card-subtitle">
+                {intl.formatMessage({
+                  id: "Base.RunningJobs.runningSince",
+                  defaultMessage: "Running since:",
+                })}
+              </td>
               <td className="card-text">{secondsToStr(elapsedTime)}</td>
             </tr>
             <tr className={errors > 0 ? "table-danger" : ""}>
-              <td className="card-subtitle">Errors:</td>
+              <td className="card-subtitle">
+                {intl.formatMessage({
+                  id: "Base.RunningJobs.Errors",
+                  defaultMessage: "Errors:",
+                })}
+              </td>
               <td className="card-text">{errors}</td>
             </tr>
             <tr>
-              <td className="card-subtitle">Transfers:</td>
+              <td className="card-subtitle">
+                {intl.formatMessage({
+                  id: "Base.RunningJobs.Transfers",
+                  defaultMessage: "Transfers:",
+                })}
+              </td>
               <td className="card-text">{transfers}</td>
             </tr>
             <tr>
-              <td className="card-subtitle">Last Error:</td>
+              <td className="card-subtitle">
+                {intl.formatMessage({
+                  id: "Base.RunningJobs.lastError",
+                  defaultMessage: "Last Error:",
+                })}
+              </td>
               <td className="card-text">{lastError}</td>
             </tr>
           </tbody>
@@ -250,7 +320,17 @@ function JobGroup({ job, groupId }) {
             <CardHeader onClick={() => setShowCollapse(!showCollapse)}>
               <Container>
                 <Row>
-                  <Col sm={10}>Transferring {job.length} file(s)</Col>
+                  <Col sm={10}>
+                    {intl.formatMessage({
+                      id: "Base.RunningJobs.Transferring",
+                      defaultMessage: "Transferring",
+                    })}
+                    {job.length}
+                    {intl.formatMessage({
+                      id: "Base.RunningJobs.file",
+                      defaultMessage: "file(s)",
+                    })}
+                  </Col>
                   <Col sm={2}>
                     <Button
                       color={"light"}
@@ -309,7 +389,12 @@ class RunningJobs extends React.Component {
 
             <Col sm={12} lg={6}>
               <Card>
-                <CardHeader>Speed</CardHeader>
+                <CardHeader>
+                  {intl.formatMessage({
+                    id: "Base.RunningJobs.Speed",
+                    defaultMessage: "Speed:",
+                  })}
+                </CardHeader>
                 <CardBody>
                   <div className="chart-wrapper">
                     <Line data={lineChartData} options={options} />
@@ -323,20 +408,33 @@ class RunningJobs extends React.Component {
           </Row>
         );
       } else {
-        return <div>Not connected to rclone.</div>;
+        return <div>
+          {intl.formatMessage({
+            id: "Base.RunningJobs.notConnected",
+            defaultMessage: "Not connected to rclone.",
+          })}
+        </div>;
       }
     } else if (mode === "card") {
       if (isConnected) {
         return <TransferringJobsRow transferring={transferring} />;
       } else {
-        return <div>Not connected to rclone.</div>;
+        return <div>
+          {intl.formatMessage({
+            id: "Base.RunningJobs.notConnected",
+            defaultMessage: "Not connected to rclone.",
+          })}
+        </div>;
       }
     } else if (mode === "modal") {
       if (transferring && transferring.length > 0)
         return (
           <Card className="progress-modal d-none d-sm-block">
             <CardHeader onClick={() => this.toggleShowing()}>
-              Progress
+              {intl.formatMessage({
+                id: "Base.RunningJobs.Progress",
+                defaultMessage: "Progress",
+              })}
               <div className="card-header-actions">
                 <Button color="link">
                   <i className="fa fa-close fa-lg" />
@@ -386,7 +484,11 @@ const mapStateToProps = (state, ownProps) => {
       labels: labels,
       datasets: [
         {
-          label: "Speed (kbps)",
+          label:
+            intl.formatMessage({
+              id: "Base.RunningJobs.Speedkbps",
+              defaultMessage: "Speed (kbps)"
+            }),
           fill: false,
           lineTension: 0.1,
           backgroundColor: "rgba(75,192,192,0.4)",
@@ -407,7 +509,11 @@ const mapStateToProps = (state, ownProps) => {
           data: data1,
         },
         {
-          label: "Average Speed (kbps)",
+          label:
+            intl.formatMessage({
+              id: "Base.RunningJobs.averageSpeedkbps",
+              defaultMessage: "Average Speed (kbps)"
+            }),
           fill: true,
           lineTension: 0.1,
           backgroundColor: "rgba(187,69,14,0.4)",

@@ -1,10 +1,10 @@
 import React from "react";
-import {Button, Col, Row} from "reactstrap";
+import { Button, Col, Row } from "reactstrap";
 
-import {connect} from "react-redux";
-import {createPath} from "../../../actions/explorerStateActions";
+import { connect } from "react-redux";
+import { createPath } from "../../../actions/explorerStateActions";
 import * as PropTypes from 'prop-types';
-import {addRemoteContainer, changeDistractionFreeMode, changeNumCols} from "../../../actions/explorerActions";
+import { addRemoteContainer, changeDistractionFreeMode, changeNumCols } from "../../../actions/explorerActions";
 import ErrorBoundary from "../../../ErrorHandling/ErrorBoundary";
 
 import singlePaneImg from '../../../assets/img/single-pane.png';
@@ -12,13 +12,14 @@ import doublePaneImg from '../../../assets/img/double-pane1.png';
 import triplePaneImg from '../../../assets/img/triple-pane.png';
 import TabbedPanes from "./TabbedPanes";
 
-import {DndProvider} from "react-dnd";
-import {HTML5Backend} from 'react-dnd-html5-backend';
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { intl } from "../../../utils/intl";
 
 class RemoteExplorerLayout extends React.Component {
 
 	changeLayout = (nos, mode) => {
-		const {changeNumCols} = this.props;
+		const { changeNumCols } = this.props;
 		// Check if the current layout is not same as previous
 		if (nos !== changeNumCols) {
 			changeNumCols(nos, mode);
@@ -27,7 +28,7 @@ class RemoteExplorerLayout extends React.Component {
 
 	componentDidMount() {
 		//Load one explorer layout
-		const {numContainers, addRemoteContainer} = this.props;
+		const { numContainers, addRemoteContainer } = this.props;
 
 		if (numContainers < 1) {
 			addRemoteContainer(0)
@@ -35,7 +36,7 @@ class RemoteExplorerLayout extends React.Component {
 	}
 
 	toggleDistractionFreeMode = (_) => {
-		const {distractionFreeMode, changeDistractionFreeMode} = this.props;
+		const { distractionFreeMode, changeDistractionFreeMode } = this.props;
 		// this.setState((prevState) => ({
 		//     distractionFreeMode: !prevState.distractionFreeMode
 		// }));
@@ -47,7 +48,7 @@ class RemoteExplorerLayout extends React.Component {
 	render() {
 
 		/*Divide the 12 bootstrap columns to fit number of explorers*/
-		const {numCols, distractionFreeMode, activeRemoteContainerID, containers} = this.props;
+		const { numCols, distractionFreeMode, activeRemoteContainerID, containers } = this.props;
 		return (
 			<ErrorBoundary>
 				<DndProvider backend={HTML5Backend}>
@@ -55,47 +56,53 @@ class RemoteExplorerLayout extends React.Component {
 
 						{distractionFreeMode && <div className="clearfix float-right">
 							<Button color={"success"} className={"ml-2"}
-									onClick={this.toggleDistractionFreeMode}><i className="fa fa-arrows"/></Button>
+								onClick={this.toggleDistractionFreeMode}><i className="fa fa-arrows" /></Button>
 						</div>}
 
 						{(!distractionFreeMode) &&
-						<Col sm={12} lg={12} className="mb-3 d-none d-md-block">
-                            
+							<Col sm={12} lg={12} className="mb-3 d-none d-md-block">
+								<span className="text-choose-layout">
+									{intl.formatMessage({
+										id: "Explorer.RemoteExplorerlayout.RemoteExplorerlayout.chooseLayout",
+										defaultMessage: "Choose Layout:",
+									})}
+									{"  "}
+								</span>
 
-                        <span className="text-choose-layout">
-                            Choose Layout: {"  "}
-                        </span>
-
-							<Button color={"primary"} className={"ml-2 layout-change-button"}
+								<Button color={"primary"} className={"ml-2 layout-change-button"}
 									onClick={() => this.changeLayout(1, "horizontal")}>
-								<img style={{height: 24}} src={singlePaneImg} alt="Single Vertical Pane"/>
-							</Button>
-							<Button color={"primary"} className={"ml-2 layout-change-button"}
+									<img style={{ height: 24 }} src={singlePaneImg} alt="Single Vertical Pane" />
+								</Button>
+								<Button color={"primary"} className={"ml-2 layout-change-button"}
 									onClick={() => this.changeLayout(2, "horizontal")}>
-								<img style={{height: 24}} src={doublePaneImg} alt="Double Vertical Pane"/>
-							</Button>
-							<Button color={"primary"} className={"ml-2 layout-change-button"}
+									<img style={{ height: 24 }} src={doublePaneImg} alt="Double Vertical Pane" />
+								</Button>
+								<Button color={"primary"} className={"ml-2 layout-change-button"}
 									onClick={() => this.changeLayout(3, "horizontal")}>
-								<img style={{height: 24}} src={triplePaneImg} alt="Triple Vertical Pane"/>
-							</Button>
+									<img style={{ height: 24 }} src={triplePaneImg} alt="Triple Vertical Pane" />
+								</Button>
 
-							<Button color={"success"} className={"ml-2"}
-									onClick={this.toggleDistractionFreeMode}><i className="fa fa-arrows"/> Full Screen
-							</Button>
-							{/*<Button onClick={this.changeLayout(4,"grid")}>4 - grid</Button>*/}
+								<Button color={"success"} className={"ml-2"}
+									onClick={this.toggleDistractionFreeMode}><i className="fa fa-arrows" />
+									{intl.formatMessage({
+										id: "Explorer.RemoteExplorerlayout.RemoteExplorerlayout.fullCsreen",
+										defaultMessage: "Full Screen",
+									})}
+								</Button>
+								{/*<Button onClick={this.changeLayout(4,"grid")}>4 - grid</Button>*/}
 
-						</Col>
+							</Col>
 						}
 					</Row>
 
-				<Row>
-					<TabbedPanes
-						numCols={numCols}
-						distractionFreeMode={distractionFreeMode}
-						activeRemoteContainerID={activeRemoteContainerID}
-						containers={containers}
-					/>
-				</Row>
+					<Row>
+						<TabbedPanes
+							numCols={numCols}
+							distractionFreeMode={distractionFreeMode}
+							activeRemoteContainerID={activeRemoteContainerID}
+							containers={containers}
+						/>
+					</Row>
 				</DndProvider>
 			</ErrorBoundary>
 		);
@@ -126,4 +133,4 @@ export default connect(mapStateToProps, {
 	changeDistractionFreeMode,
 	addRemoteContainer
 })
-(RemoteExplorerLayout);
+	(RemoteExplorerLayout);

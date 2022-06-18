@@ -1,24 +1,24 @@
 export const config = [
-    {
-        "Name": "alias",
-        "Description": "Alias for a existing remote",
-        "Prefix": "alias",
-        "Options": [
-            {
-                "Name": "remote",
-                "Help": "Remote or path to alias.\nCan be \"myremote:path/to/dir\", \"myremote:bucket\", \"myremote:\" or \"/local/path\".",
-                "Provider": "",
-                "Default": "",
-                "Value": null,
-                "ShortOpt": "",
-                "Hide": 0,
-                "Required": true,
-                "IsPassword": false,
-                "NoPrefix": false,
-                "Advanced": false
-            }
-        ]
-    },
+    // {
+    //     "Name": "alias",
+    //     "Description": "Alias for a existing remote*****",
+    //     "Prefix": "alias",
+    //     "Options": [
+    //         {
+    //             "Name": "remote",
+    //             "Help": "Remote or path to alias.\nCan be \"myremote:path/to/dir\", \"myremote:bucket\", \"myremote:\" or \"/local/path\".",
+    //             "Provider": "",
+    //             "Default": "",
+    //             "Value": null,
+    //             "ShortOpt": "",
+    //             "Hide": 0,
+    //             "Required": true,
+    //             "IsPassword": false,
+    //             "NoPrefix": false,
+    //             "Advanced": false
+    //         }
+    //     ]
+    // },
     {
         "Name": "amazon cloud drive",
         "Description": "Amazon Drive",

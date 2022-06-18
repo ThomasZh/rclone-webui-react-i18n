@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, { useCallback, useState } from 'react';
 import {
     Button,
     Col,
@@ -14,12 +14,13 @@ import {
     UncontrolledTooltip
 } from 'reactstrap';
 import axiosInstance from "../../../utils/API/API";
-import {addColonAtLast, formatBytes} from "../../../utils/Tools";
-import {toast} from "react-toastify";
+import { addColonAtLast, formatBytes } from "../../../utils/Tools";
+import { toast } from "react-toastify";
 import * as RclonePropTypes from "../../../utils/RclonePropTypes";
 import FileUploadBox from "./FileUploadBox";
-import {DndProvider} from "react-dnd";
-import {HTML5Backend} from "react-dnd-html5-backend";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { intl } from "../../../utils/intl";
 
 /**
  * New Mount Modal shows a button for opening a modal for new mount and then executes okHandle when positive
@@ -96,11 +97,14 @@ const FileUploadModal = (props) => {
         <div data-test="fileUploadModalComponent">
 
             <Button className="btn-explorer-action h-100" id="UploadButton"
-                    onClick={toggle}>
-                <i className="fa fa-lg fa-upload"/>
+                onClick={toggle}>
+                <i className="fa fa-lg fa-upload" />
             </Button>
             <UncontrolledTooltip placement="right" target="UploadButton">
-                Upload file(s)
+                {intl.formatMessage({
+                    id: "Base.FileOperations.FileUploadModal.uploadFiles",
+                    defaultMessage: "Upload file(s)",
+                })}
             </UncontrolledTooltip>
             <Modal isOpen={modal} toggle={toggle}>
                 <DndProvider backend={HTML5Backend}>
@@ -111,37 +115,37 @@ const FileUploadModal = (props) => {
                                 {files ? <Row>
                                     <Table>
                                         <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Size</th>
-                                        </tr>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Size</th>
+                                            </tr>
                                         </thead>
                                         <tbody>
-                                        {getFilesElement()}
+                                            {getFilesElement()}
                                         </tbody>
                                     </Table>
 
                                 </Row> : <Row className="upload-box">
-                                    <Col sm={3}/>
+                                    <Col sm={3} />
                                     <Col sm={6}>
 
                                         <label htmlFor="upload-file">
 
                                             <Row>
-                                                <i className="fa fa-lg fa-plus mx-auto mt-5"/>
+                                                <i className="fa fa-lg fa-plus mx-auto mt-5" />
                                                 <p className="text-center mt-2">Click here or drag and drop files to
                                                     upload</p>
                                             </Row>
 
                                         </label>
                                     </Col>
-                                    <Col sm={3}/>
+                                    <Col sm={3} />
                                 </Row>
                                 }
                                 <Row>
                                     <FormGroup row className="pl-2 pr-2 d-none">
                                         <Input id="upload-file" type="file" name="file" onChange={changeFilesHandler}
-                                               multiple/>
+                                            multiple />
                                     </FormGroup>
                                 </Row>
                             </FileUploadBox>
@@ -149,7 +153,7 @@ const FileUploadModal = (props) => {
                     </ModalBody>
                     <ModalFooter>
                         <Button data-test="ok-button" color="primary" onClick={fileUploadHandler}
-                                disabled={isUploadDisabled()}>{isUploading ? "Uploading" : "Upload"}</Button>{' '}
+                            disabled={isUploadDisabled()}>{isUploading ? "Uploading" : "Upload"}</Button>{' '}
                         <Button data-test="cancel-button" color="secondary" onClick={toggle}>Cancel</Button>
                     </ModalFooter>
                 </DndProvider>

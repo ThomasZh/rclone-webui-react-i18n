@@ -51,7 +51,7 @@ class Login extends Component {
   constructor(props) {
     super(props);
     // let ipAddress = window.location.href.split("#/")[0];
-    let ipAddress = "http://localhost:5572/";
+    let ipAddress = "http://110.40.187.88:5572/";
     // if (ipAddress.indexOf("?") !== -1)
     //   ipAddress = window.location.href.split("?")[0];
     // if (localStorage.getItem(IP_ADDRESS_KEY))
@@ -96,14 +96,21 @@ class Login extends Component {
     ]).then(() => {
       axiosInstance.post(urls.noopAuth).then(
         (data) => {
-          console.log("Connection successful.");
+          console.log(            intl.formatMessage({
+            id: "Pages.Login.ConnectionSuccessful",
+            defaultMessage: "Connection successful.",
+          }));
           this.redirectToDashboard();
         },
         (error) => {
           console.log(error);
           this.setState({
             error:
-              "Error connecting. Please check username password and verify if rclone is working at the specified IP.",
+            intl.formatMessage({
+              id: "Pages.Login.ErrorConnecting",
+              defaultMessage: "Error connecting. Please check username password and verify if rclone is working at the specified IP.",
+            })
+              
           });
         }
       );

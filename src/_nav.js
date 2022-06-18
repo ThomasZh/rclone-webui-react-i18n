@@ -34,14 +34,14 @@ export default {
     //   url: "/rcloneBackend",
     //   icon: "icon-star",
     // },
-    // {
-    //   name: intl.formatMessage({
-    //     id: "nav.Mounts",
-    //     defaultMessage: "Mounts",
-    //   }),
-    //   url: "/mountDashboard",
-    //   icon: "fa fa-hdd-o",
-    // },
+    {
+      name: intl.formatMessage({
+        id: "nav.Mounts",
+        defaultMessage: "Mounts",
+      }),
+      url: "/mountDashboard",
+      icon: "fa fa-hdd-o",
+    },
     {
       name: intl.formatMessage({
         id: "nav.LogOut",
