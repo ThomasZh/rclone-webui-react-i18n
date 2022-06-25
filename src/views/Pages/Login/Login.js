@@ -50,12 +50,11 @@ function removeParam(parameter) {
 class Login extends Component {
   constructor(props) {
     super(props);
-    // let ipAddress = window.location.href.split("#/")[0];
-    let ipAddress = "http://110.40.187.88:5572/";
-    // if (ipAddress.indexOf("?") !== -1)
-    //   ipAddress = window.location.href.split("?")[0];
-    // if (localStorage.getItem(IP_ADDRESS_KEY))
-    //     ipAddress = localStorage.getItem(IP_ADDRESS_KEY);
+     let ipAddress = window.location.href.split("#/")[0];
+ 
+      if (ipAddress.indexOf("?") !== -1)
+        ipAddress = window.location.href.split("?")[0];
+
     this.state = {
       username: "",
       password: "",

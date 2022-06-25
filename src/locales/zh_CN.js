@@ -133,6 +133,13 @@ const zh_CN = {
   "Base.FileOperations.NewFolder.CreateFolder":" 创建文件夹",
   "Base.FileOperations.FileUploadModal.uploadFiles":"上传文件",
   "Explorer.RemoteList.RemotesList.Open1":"打开",
+  "MountDashboard.MountDashboard.Number":"序号",
+  "MountDashboard.MountDashboard.mountPoint":"挂载点",
+  "MountDashboard.MountDashboard.mountSince":"挂载时间",
+  "MountDashboard.MountDashboard.Fs":"磁盘",
+  "MountDashboard.MountDashboard.Actions":"操作",
+  "MountDashboard.MountDashboard.unmountAll":"全部卸载",
+  "MountDashboard.MountDashboard.createNewMount":"创建新挂载",
 };
 
 export default zh_CN;

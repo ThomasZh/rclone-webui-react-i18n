@@ -1,10 +1,10 @@
 import React from 'react';
-import {connect} from "react-redux";
-import {Button, Col, Row, Table} from "reactstrap";
+import { connect } from "react-redux";
+import { Button, Col, Row, Table } from "reactstrap";
 import * as PropTypes from "prop-types";
-import {addMount, getMountList, unmount, unmountAll} from "../../actions/mountActions";
+import { addMount, getMountList, unmount, unmountAll } from "../../actions/mountActions";
 import NewMountModal from "./NewMountModal";
-
+import { intl } from "../../utils/intl";
 /**
  * MountDashboard is the main page for mounting and unmounting drives.
  */
@@ -18,51 +18,73 @@ class MountDashboard extends React.Component {
 	}
 
 	componentDidMount() {
-		const {getMountList} = this.props;
+		const { getMountList } = this.props;
 		getMountList();
 	}
 
 
 	handleRemoveMount = (item) => {
-		const {unmount} = this.props;
+		const { unmount } = this.props;
 		unmount(item.MountPoint);
 	}
 
 	handleCreateNewMount = (mountFs, mountPoint, vfsOptions, mountOptions) => {
-		const {addMount} = this.props;
+		const { addMount } = this.props;
 		addMount(mountFs, mountPoint, "", vfsOptions, mountOptions);
 	}
 
 	handleUnmountAll = () => {
-		const {unmountAll} = this.props;
+		const { unmountAll } = this.props;
 		unmountAll();
 	}
 
 
 	render() {
-		const {currentMounts} = this.props;
+		const { currentMounts } = this.props;
 		return (
 			<div data-test="mountDashboardComponent">
 				<Row>
 					<Col lg={12} className="mb-4 d-flex justify-content-between">
-						<NewMountModal buttonLabel="Create new mount" okHandle={this.handleCreateNewMount}/>
-						<Button className={"float-right"} color="danger" onClick={this.handleUnmountAll}>Unmount
-							all</Button>
+						<NewMountModal buttonLabel={intl.formatMessage({
+								id: "MountDashboard.MountDashboard.createNewMount",
+								defaultMessage: "Create new mount",
+							})} okHandle={this.handleCreateNewMount} />
+						<Button className={"float-right"} color="danger" onClick={this.handleUnmountAll}>
+							{intl.formatMessage({
+								id: "MountDashboard.MountDashboard.unmountAll",
+								defaultMessage: "Unmount all",
+							})}
+						</Button>
 					</Col>
 				</Row>
 				<Table responsive className="table-striped">
 					<thead>
-					<tr>
-						<th>No.</th>
-						<th>Mount Point</th>
-						<th>Mounted since</th>
-						<th>Fs</th>
-						<th>Actions</th>
-					</tr>
+						<tr>
+							<th>{intl.formatMessage({
+								id: "MountDashboard.MountDashboard.Number",
+								defaultMessage: "No. ",
+							})}</th>
+							<th>{intl.formatMessage({
+								id: "MountDashboard.MountDashboard.mountPoint",
+								defaultMessage: "Mount Point",
+							})}</th>
+							<th>{intl.formatMessage({
+								id: "MountDashboard.MountDashboard.mountSince",
+								defaultMessage: "Mounted since",
+							})}</th>
+							<th>{intl.formatMessage({
+								id: "MountDashboard.MountDashboard.Fs",
+								defaultMessage: "Fs",
+							})}</th>
+							<th>{intl.formatMessage({
+								id: "MountDashboard.MountDashboard.Actions",
+								defaultMessage: "Actions",
+							})}</th>
+						</tr>
 					</thead>
 					<tbody>
-					{
-						currentMounts && currentMounts.map((item, index) => {
+						{
+							currentMounts && currentMounts.map((item, index) => {
 								return (<tr key={item.MountPoint}>
 									<td>{index}</td>
 									<td>{item.MountPoint}</td>
@@ -72,9 +94,9 @@ class MountDashboard extends React.Component {
 									</td>
 								</tr>);
 							}
-						)
+							)
 
-					}
+						}
 					</tbody>
 				</Table>
 
@@ -94,4 +116,4 @@ MountDashboard.propTypes = {
 	unmount: PropTypes.func.isRequired
 };
 
-export default connect(mapStateToProps, {getMountList, addMount, unmount, unmountAll})(MountDashboard);
+export default connect(mapStateToProps, { getMountList, addMount, unmount, unmountAll })(MountDashboard);
