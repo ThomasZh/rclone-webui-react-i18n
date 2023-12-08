@@ -1,15 +1,15 @@
 {
   "name": "@rclone/rclone-webui-react",
-  "version": "2.0.1",
-  "description": "A web interface for r-clone",
-  "author": "Chaitanya Bankanhal",
+  "version": "2.1.1",
+  "description": "A web interface for cy-clone",
+  "author": "Thomas Zhang",
   "copyright": "",
   "license": "MIT",
   "private": false,
   "homepage": "./",
   "repository": {
     "type": "git",
-    "url": "git@github.com:negative0/rclone-webui-react.git"
+    "url": "git@github.com:ThomasZh@rclone-webui-react-i18n.git"
   },
   "dependencies": {
     "@coreui/coreui": "^2.1.16",
@@ -74,7 +74,7 @@
     "eject": "react-scripts eject"
   },
   "bugs": {
-    "url": "https://github.com/negative0/rclone-webui-react/issues"
+    "url": "https://github.com/ThomasZh/rclone-webui-react-i18n/issues"
   },
   "eslintConfig": {
     "extends": "react-app"

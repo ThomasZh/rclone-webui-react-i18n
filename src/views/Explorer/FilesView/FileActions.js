@@ -1,8 +1,9 @@
 import React from "react";
-import { Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from "reactstrap";
+// import { Button, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from "reactstrap";
+import { Button } from "reactstrap";
 import * as PropTypes from "prop-types";
 import * as RclonePropTypes from "../../../utils/RclonePropTypes";
-import { intl } from "../../../utils/intl";
+// import { intl } from "../../../utils/intl";
 
 function FileActions({ downloadHandle, deleteHandle, item, linkShareHandle }) {
     const confirmDelete = (deleteHandle, item) => {
